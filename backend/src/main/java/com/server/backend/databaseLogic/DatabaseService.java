@@ -26,4 +26,8 @@ public class DatabaseService {
   public List<Database> getAllDatabases() {
     return databaseRepository.findAll();
   }
+
+  public Database getDatabaseById(int id) {
+    return databaseRepository.findById(id).orElse(null);
+  }
 }

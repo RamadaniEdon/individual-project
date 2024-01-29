@@ -12,13 +12,15 @@ public class PrivateData {
     private String dbId;
     private String table;
     private String column;
+    private String primaryColumnValue;
     private String privacyClass;
     
-    public PrivateData(String userAfm, String dbId, String table, String column, String privacyClass) {
+    public PrivateData(String userAfm, String dbId, String table, String column, String primaryColumnValue, String privacyClass) {
         this.userAfm = userAfm;
         this.dbId = dbId;
         this.table = table;
         this.column = column;
+        this.primaryColumnValue = primaryColumnValue;
         this.privacyClass = privacyClass;
     }
 
@@ -46,6 +48,10 @@ public class PrivateData {
         return column;
     }
 
+    public String getPrimaryColumnValue() {
+        return primaryColumnValue;
+    }
+
     public String getPrivacyClass() {
         return privacyClass;
     }
@@ -70,6 +76,10 @@ public class PrivateData {
         this.column = column;
     }
 
+    public void setPrimaryColumnValue(String primaryColumnValue){
+        this.primaryColumnValue = primaryColumnValue;
+    }
+    
     public void setPrivacyClass(String privacyClass){
         this.privacyClass = privacyClass;
     }

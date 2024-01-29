@@ -2,11 +2,9 @@ package com.server.backend;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Dynamic;
 import com.server.backend.components.DatabaseComponent;
 import com.server.backend.configurations.DynamicDatabaseService;
 import com.server.backend.databaseLogic.Database;
-import com.server.backend.databaseLogic.DatabaseRepository;
 import com.server.backend.databaseLogic.DatabaseService;
 import com.server.backend.ontologyLogic.OntologyRepository;
 import com.server.backend.userDataLogic.PrivacyClass;
@@ -15,6 +13,8 @@ import com.server.backend.userDataLogic.PrivateDataService;
 import com.server.backend.userDataLogic.User;
 import com.server.backend.userDataLogic.UserService;
 import com.server.backend.utils.Helpers;
+
+import jakarta.websocket.server.PathParam;
 
 import java.io.File;
 import java.util.List;
@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 public class Tests {
@@ -109,27 +111,28 @@ public class Tests {
     return "EDONI";
   }
 
-
   @Autowired
   private UserService userService;
   @Autowired
-  private PrivateDataService  privateDataService;
+  private PrivateDataService privateDataService;
 
-  //post mapping for adding a new user
+  // post mapping for adding a new user
   @PostMapping("/user")
   public ResponseEntity<String> postMethodName(@RequestBody User user) {
     userService.addNewUser(user);
 
     return ResponseEntity.ok("User added successfully");
   }
-  //post mapping for adding a new privacy class
+
+  // post mapping for adding a new privacy class
   @PostMapping("/user/privacyClass")
   public ResponseEntity<String> postMethodName(@RequestBody PrivacyClass privacyClass) {
     privateDataService.addNewPrivacyClass(privacyClass);
 
     return ResponseEntity.ok("Privacy Class added successfully");
   }
-  //post mapping for adding a new private data
+
+  // post mapping for adding a new private data
   @PostMapping("/user/privateData")
   public ResponseEntity<String> postMethodName(@RequestBody PrivateData privateData) {
     privateDataService.addNewPrivateData(privateData);
@@ -137,19 +140,19 @@ public class Tests {
     return ResponseEntity.ok("Private Data added successfully");
   }
 
-  //get mapping for getting all users
+  // get mapping for getting all users
   @GetMapping("/user")
   public List<User> getUsers() {
     return userService.getUsers();
   }
 
-  //get mapping for getting all privacy classes
+  // get mapping for getting all privacy classes
   @GetMapping("/user/privacyClass")
   public List<PrivacyClass> getPrivacyClasses() {
     return privateDataService.getPrivacyClasses();
   }
 
-  //get mapping for getting all private data
+  // get mapping for getting all private data
 
   @GetMapping("/user/privateData")
   public List<PrivateData> getPrivateData() {
@@ -158,8 +161,32 @@ public class Tests {
 
   @GetMapping("/merridatabazat")
   public List<Database> getMethodName1() {
-      return databaseService.getAllDatabases();
+    return databaseService.getAllDatabases();
   }
-  
+
+  @GetMapping("/database/table")
+  public List<Map<String, Object>> getMethodName(@RequestParam int dbId, @RequestParam String tableName) {
+    Database database = databaseService.getDatabaseById(dbId);
+    dynamicDatabaseService.setDynamicDataSource(database);
+    String primaryKey =  dynamicDatabaseService.getPrimaryKeyColumnName(tableName);
+    List<Map<String, Object>> tableResult = dynamicDatabaseService.retrieveTable(tableName);
+    dynamicDatabaseService.resetDataSource();
+    privateDataService.filterTable(tableResult, dbId, tableName, primaryKey);
+
+
+    return tableResult;
+  }
+
+  @GetMapping("/database/{dbId}")
+  public Database getMethodName(@PathParam(value = "dbId") int dbId) {
+    return databaseService.getDatabaseById(dbId);
+  }
+
+  @PutMapping("user/privateData/{id}")
+  public ResponseEntity<String> putMethodName(@PathVariable String id, @RequestBody PrivateData privateData) {
+    privateDataService.updateUser(privateData, id);
+
+    return ResponseEntity.ok("Private Data added successfully");
+  }
 
 }

@@ -4,13 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.mysql.cj.jdbc.DatabaseMetaData;
 import com.server.backend.components.UserDataTable;
+import com.server.backend.databaseLogic.Database;
 import com.server.backend.utils.QueryHelpers;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +23,31 @@ import java.util.Map;
 public class DynamicDatabaseService {
 
     private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+
+    public List<Map<String, Object>> retrieveTable(String tableName){
+        return jdbcTemplate.queryForList("SELECT * FROM " + tableName);
+    }
+
+    public String getPrimaryKeyColumnName(String tableName) {
+        String sql = "SELECT COLUMN_NAME " +
+                     "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE " +
+                     "WHERE TABLE_NAME = ? AND CONSTRAINT_NAME = 'PRIMARY'";
+
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, tableName);
+
+        if (!result.isEmpty()) {
+            return (String) result.get(0).get("COLUMN_NAME");
+        }
+
+        return null; // Return null if no primary key found
+    }
+
+
+    public void setDynamicDataSource(Database db) {
+        DataSource dynamicDataSource = createDynamicDataSource(db.getUrl(), db.getName(), db.getUsername(), db.getPassword());
+        jdbcTemplate.setDataSource(dynamicDataSource);
+    }
+
 
     public void setDynamicDataSource(String url, String dbName, String username, String password) {
         DataSource dynamicDataSource = createDynamicDataSource(url, dbName, username, password);
