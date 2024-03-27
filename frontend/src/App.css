@@ -36,3 +36,87 @@
     transform: rotate(360deg);
   }
 }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+        
+.tabletable {
+  /* width: 100vw; */
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: strech;
+  justify-content: stretch;
+}
+
+.tabletable > div {
+}
+.tabletable div {
+}
+
+p {
+  padding: 6px 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid black;
+  max-width: 100%;
+  min-width: 10rem;
+}
+
+.column {
+/*   height: 100%; */
+/*   width: auto; */
+  display: flex;
+  flex-direction: column;
+/*   align-items: center; */
+  justify-content: center;
+}
+
+.column > p {
+  height: 100%;
+}
+
+
+.row {
+  width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.row > p {
+  height: 100%
+}
+
+.data {
+  margin-top: 0.2rem;
+  background-color: lightblue;
+}
+
+.Table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dataValue {
+  border: 1px solid;
+}
+.dataValue > p {
+  border: none;
+}
+.dataValue > button {
+  width: 80%;
+  margin: 0 auto;
+  background-color: #ee4b46;
+  border: 1px solid #f1322b;
+}
+
+.dataValue > button:hover {
+  background-color: #ff0800;
+}
