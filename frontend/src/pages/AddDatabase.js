@@ -79,7 +79,7 @@ const AddDatabase = () => {
               setFormData(newFormData);
             }}>Click Me</Button>
             <Button onClick={() => {
-              console.log(formData);
+              console.log(JSON.stringify(formData));
             }}>Submit</Button>
 
 

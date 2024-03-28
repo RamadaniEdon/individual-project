@@ -10,6 +10,7 @@ function UserData() {
   useEffect(() => {
     getUserDataFromDb("").then((data) => {
       setUserData(data)
+      console.log(JSON.stringify(data))
     })
   }, [userData])
 
