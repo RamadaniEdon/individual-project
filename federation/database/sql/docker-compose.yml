@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: sqltest
+    ports:
+      - "10010:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: sqltest
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    restart: always
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "10011:8080"
+    restart: always

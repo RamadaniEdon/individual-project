@@ -8,9 +8,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:schema="https://schema.org/">
-    <Ontology>
+    <!-- <Ontology>
         <imports rdf:resource="https://schema.org/"/>
-    </Ontology>
+    </Ontology> -->
     
 
 

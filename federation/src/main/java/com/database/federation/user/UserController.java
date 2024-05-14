@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class UserController {
@@ -65,4 +66,11 @@ public class UserController {
       return new ResponseEntity<>("Failed to delete user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @GetMapping("/users/{id}/data")
+  public ResponseEntity<String> getMethodName(@PathVariable String id) {
+    
+    return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+  }
+
 }

@@ -16,6 +16,22 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
+import org.springframework.web.method.annotation.ModelFactory;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.util.FileManager;
+import org.springframework.stereotype.Service;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.FileManager;
+import org.springframework.stereotype.Service;
+
+import java.io.InputStream;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class OntologyHelpers {
 
@@ -28,6 +44,55 @@ public class OntologyHelpers {
   private static OWLOntology newOntology;
   private static final String schemaOrgIRI = "https://schema.org/";
   static String directoryPath = "./src/uploads/ontologies/";
+
+  public static String databaseOntologyFileName(String dbId) {
+    return directoryPath + "ontology" + dbId + ".owl";
+  }
+
+  public static IRI getEquivalentPropertyIRI(String dbId, String objectPropertyIRI) {
+    OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    File file = new File(databaseOntologyFileName(dbId));
+    System.out.println(file);
+    try {
+      // Load the ontology
+      OWLOntology ontology = manager.loadOntologyFromOntologyDocument(file);
+      
+      // Get the object property by IRI
+      OWLObjectProperty objectProperty = getObjectPropertyByIRI(ontology, objectPropertyIRI);
+
+      if (objectProperty != null) {
+        // Iterate through axioms to find equivalent property
+        for (OWLAxiom axiom : ontology.getAxioms()) {
+          if (axiom instanceof OWLEquivalentObjectPropertiesAxiom) {
+            OWLEquivalentObjectPropertiesAxiom equivAxiom = (OWLEquivalentObjectPropertiesAxiom) axiom;
+            Set<OWLObjectPropertyExpression> properties = equivAxiom.getProperties();
+
+            // Check if objectProperty is part of the equivalent properties
+            if (properties.contains(objectProperty)) {
+              // Return the first equivalent property IRI (if any)
+              for (OWLObjectPropertyExpression prop : properties) {
+                if (!prop.equals(objectProperty)) {
+                  return prop.asOWLObjectProperty().getIRI();
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (OWLOntologyCreationException e) {
+      // e.printStackTrace();
+    }
+
+    return null; // Return null if the property or equivalent property is not found
+  }
+
+  private static OWLObjectProperty getObjectPropertyByIRI(OWLOntology ontology, String objectPropertyIRI) {
+    OWLOntologyManager manager = ontology.getOWLOntologyManager();
+    OWLDataFactory dataFactory = manager.getOWLDataFactory();
+
+    IRI iri = IRI.create(objectPropertyIRI);
+    return dataFactory.getOWLObjectProperty(iri);
+  }
 
   public static void reloadOntologyManager() throws OWLOntologyCreationException {
     ontologyManager = OWLManager.createOWLOntologyManager();
@@ -45,7 +110,7 @@ public class OntologyHelpers {
   }
 
   public static void saveNewOntology(int pathAdjuctor) throws OWLOntologyStorageException {
-    File outputFile = new File(directoryPath + "ontology"+pathAdjuctor+".owl");
+    File outputFile = new File(directoryPath + "ontology" + pathAdjuctor + ".owl");
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
       ontologyManager.saveOntology(newOntology, new RDFXMLDocumentFormat(), outputStream);
     } catch (Exception e) {
@@ -78,16 +143,6 @@ public class OntologyHelpers {
         System.out.println("Property '" + equivalentProperty + "' is not of type '" + type + "'");
       }
     }
-
-    // if (isClassOfPropertyDomain(typeClass, eqProperty)) {
-    // addEquivalentProperty(newProperty, equivalentProperty);
-    // } else if (PropertyMapper.getLinkingClass(equivalentProperty, type) != null)
-    // {
-    // addEquivalentProperty(newProperty, equivalentProperty);
-    // } else {
-    // System.out.println("Property '" + equivalentProperty + "' is not of type '" +
-    // type + "'");
-    // }
   }
 
   // public static void isObjectProperty(String property)

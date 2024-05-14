@@ -44,6 +44,14 @@ public class UserDataTable {
     this.privateData = privateData;
   }
 
+  public String getTableName(){
+    return tableName;
+  }
+
+  public void setTableName(String tableName){
+    this.tableName = tableName;
+  }
+
   public List<String> getColumnNames() {
     return columnNames;
   }

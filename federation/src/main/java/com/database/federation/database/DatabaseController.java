@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.database.federation.ontology.OntologyService;
 import com.database.federation.user.UserModel;
+import com.database.federation.utils.DatabaseForm;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class DatabaseController {
 
   @PostMapping("/databases")
-  public ResponseEntity<String> addDocument() {
+  public ResponseEntity<String> addDocument(@RequestBody DatabaseForm databaseForm) {
     try {
-      OntologyService.mapDatabaseToOntology(null);
+      databaseForm.setId("1");
+      System.out.println(databaseForm);
+      OntologyService.mapDatabaseToOntology(databaseForm);
       return new ResponseEntity<>("Database created successfully", HttpStatus.CREATED);
     } catch (Exception e) {
       return new ResponseEntity<>("Failed to add document: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,4 +1,4 @@
-package com.server.backend;
+package com.server.backend.sen_svyn;
 
 
 import org.semanticweb.owlapi.apibinding.OWLManager;

@@ -18,7 +18,9 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 
+import com.database.federation.utils.Collection;
 import com.database.federation.utils.DatabaseForm;
+import com.database.federation.utils.Field;
 
 public class OntologyService {
 
@@ -27,6 +29,7 @@ public class OntologyService {
   private static OWLOntologyManager manager;
   private static OWLOntology schemaOrgOntology;
   private static String newOntologyPrefix;
+  private static int indirections;
 
   static {
     manager = OWLManager.createOWLOntologyManager();
@@ -35,8 +38,12 @@ public class OntologyService {
     } catch (Exception e) {
       System.out.println("Failed to load schema.org ontology: " + e.getMessage());
     }
+    indirections = 0;
+    // newOntologyPrefix = "http://localhost:8081/ontology/"; //ma vone e hekiiiii
+  }
 
-    newOntologyPrefix = "http://example.org#"; //ma vone e hekiiiii
+  private static void setNewOntologyPrefix(DatabaseForm form) {
+    newOntologyPrefix = "http://localhost:8081/ontology/" + form.getId() + "/";
   }
 
   public static void mapDatabaseToOntology(DatabaseForm form) throws Exception {
@@ -48,20 +55,45 @@ public class OntologyService {
 
     // Create an empty ontology
     OWLOntology ontology = manager.createOntology();
-
+    indirections = 0;
+    setNewOntologyPrefix(form);
     // Add import declaration to the ontology
     OWLImportsDeclaration importDeclaration = manager.getOWLDataFactory()
         .getOWLImportsDeclaration(IRI.create(SCHEMA_ORG_URI));
     manager.applyChange(new AddImport(ontology, importDeclaration));
 
-    addEquivalentClass(ontology, "myClassStr", "schemaClassStr");
-    addSubClass(ontology, "myClassStr", "schemaClassStr");
-    addSubObjectProperty(ontology, "myObjectPropertyStr", "schemaObjectPropertyStr");
-    addEquivalentObjectProperty(ontology, "myObjectPropertyStr", "schemaObjectPropertyStr");
-    addSubDatatypeProperty(ontology, "myDatatypePropertyStr", "schemaDatatypePropertyStr");
-    addEquivalentDatatype(ontology, "myDatatypeStr", "schemaDatatypeStr");
+    for (Collection c : form.getCollections()) {
+      addEquivalentClass(ontology, c.getCollectionName(), c.getMeaning());
 
-    createOntologyFile(ontology, "ontology.owl");
+      for (Field f : c.getFields()) {
+        mapFieldRecursively(ontology, f, c.getMeaning(),  c.getCollectionName(), c.getCollectionName());
+      }
+    }
+
+    // addEquivalentClass(ontology, "myClassStr", "schemaClassStr");
+    // addSubClass(ontology, "myClassStr", "schemaClassStr");
+    // addSubObjectProperty(ontology, "myObjectPropertyStr", "schemaObjectPropertyStr");
+    // addEquivalentObjectProperty(ontology, "myObjectPropertyStr", "schemaObjectPropertyStr");
+    // addSubDatatypeProperty(ontology, "myDatatypePropertyStr", "schemaDatatypePropertyStr");
+    // addEquivalentDatatype(ontology, "myDatatypeStr", "schemaDatatypeStr");
+
+    createOntologyFile(ontology, "ontology_" + form.getId() + ".owl");
+  }
+
+  private static void mapFieldRecursively(OWLOntology ontology, Field f, String parent, String prefix, String collectionName) throws Exception{
+    if (!isPropertyOfClass(f.getMeaning(), parent)) System.out.println("Gabim " + f.getMeaning() + parent);
+    if (!f.isDatatype()) {
+      if (!isObjectProperty(f.getMeaning())) System.out.println("Gabim " + f.getMeaning());
+      indirections++;
+      addEquivalentClass(ontology, prefix+"#"+f.getName()+"-"+ indirections, f.getName());
+      addEquivalentObjectProperty(ontology, prefix +"#"+f.getMeaning()+"-"+indirections, f.getMeaning());
+      for(Field ff : f.getFields()){
+        mapFieldRecursively(ontology, ff, f.getName() , f.getName()+"-"+ indirections, collectionName);
+      }
+    } else {
+      if(isObjectProperty(f.getMeaning())) addEquivalentObjectProperty(ontology,prefix+ "#" + f.getName(), f.getMeaning());
+      else addEquivalentDatatype(ontology, prefix + "#" +f.getName(), f.getMeaning());
+    }
   }
 
   // NEED TO BE IMPLEMENTED
@@ -131,8 +163,10 @@ public class OntologyService {
     OWLObjectProperty myProperty = manager.getOWLDataFactory().getOWLObjectProperty(myPropertyIRI);
     OWLObjectProperty schemaProperty = manager.getOWLDataFactory().getOWLObjectProperty(schemaPropertyIRI);
 
-    // Define the subclass axiom stating that myProperty is a subproperty of schemaProperty
-    OWLSubObjectPropertyOfAxiom subPropertyAxiom = manager.getOWLDataFactory().getOWLSubObjectPropertyOfAxiom(myProperty,
+    // Define the subclass axiom stating that myProperty is a subproperty of
+    // schemaProperty
+    OWLSubObjectPropertyOfAxiom subPropertyAxiom = manager.getOWLDataFactory().getOWLSubObjectPropertyOfAxiom(
+        myProperty,
         schemaProperty);
 
     // Add the subproperty axiom to the ontology
@@ -149,7 +183,8 @@ public class OntologyService {
     OWLObjectProperty myProperty = manager.getOWLDataFactory().getOWLObjectProperty(myPropertyIRI);
     OWLObjectProperty schemaProperty = manager.getOWLDataFactory().getOWLObjectProperty(schemaPropertyIRI);
 
-    // Define the subclass axiom stating that mProperty is a subproperty of schemaProperty
+    // Define the subclass axiom stating that mProperty is a subproperty of
+    // schemaProperty
     OWLEquivalentObjectPropertiesAxiom equivalentPropertiesAxiom = manager.getOWLDataFactory()
         .getOWLEquivalentObjectPropertiesAxiom(myProperty, schemaProperty);
 
@@ -331,24 +366,27 @@ public class OntologyService {
   public static void main(String[] args) {
     try {
 
-      int i = 0;
-      int lower = 400;
-      int upper = 600;
-      for (OWLObjectProperty objectProperty : schemaOrgOntology.getObjectPropertiesInSignature()) {
-        i++;
-        if (i < lower)
-          continue;
-        if (i > upper)
-          break;
-        if (objectProperty.getIRI().getFragment().equals("type")) {
-          System.out.println("Object property: " + objectProperty.getIRI());
-        } else if (!acceptsDataTypes(objectProperty.getIRI().getFragment())) {
-          System.out.println("Object property: " + objectProperty.getIRI().getFragment());
-        } else {
-          System.out.println("Object property: " + objectProperty.getIRI().getFragment());
-          System.out.print("YAY - ");
-        }
-      }
+      // int i = 0;
+      // int lower = 400;
+      // int upper = 600;
+      // for (OWLObjectProperty objectProperty :
+      // schemaOrgOntology.getObjectPropertiesInSignature()) {
+      // i++;
+      // if (i < lower)
+      // continue;
+      // if (i > upper)
+      // break;
+      // if (objectProperty.getIRI().getFragment().equals("type")) {
+      // System.out.println("Object property: " + objectProperty.getIRI());
+      // } else if (!acceptsDataTypes(objectProperty.getIRI().getFragment())) {
+      // System.out.println("Object property: " +
+      // objectProperty.getIRI().getFragment());
+      // } else {
+      // System.out.println("Object property: " +
+      // objectProperty.getIRI().getFragment());
+      // System.out.print("YAY - ");
+      // }
+      // }
 
       List<String> rangeClasses = getRangeClasses("closes");
       System.out.println("Range classes: " + rangeClasses);
@@ -362,6 +400,7 @@ public class OntologyService {
       System.out.println("Super classes: " + superClasses);
 
       System.out.println("Object property: " + isObjectProperty("address"));
+      System.out.println(acceptsDataTypes("address"));
     } catch (Exception e) {
       System.out.println("Failed to map database to ontology: " + e.getMessage());
     }

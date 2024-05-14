@@ -1,0 +1,77 @@
+{
+  "url": "localhost:10001",
+  "type": "sql",
+  "name": "sql_test_orders",
+  "companyName": "sql_test_orders_company",
+  "port": 10001,
+  "host": "localhost",
+  "username": "db_user",
+  "password": "db_user_pass",
+  "collections": [
+    {
+      "name": "Users",
+      "meaning":"Person",
+      "fields": [
+        {
+          "name": "id",
+          "meaning": "identifier"
+        },
+        {
+          "name": "afm",
+          "meaning":"taxID"
+        },
+        {
+          "name": "name",
+          "meaning": "givenName"
+        },
+        {
+          "name": "surname",
+          "meaning": "familyName"
+        },
+        {
+          "name": "birthday",
+          "meaning": "birthDate"
+        },
+        {
+          "meaning": "address",
+          "class": "PostalAddress",
+          "fields": [
+            {
+              "name": "country",
+              "meaning": "addressCountry"
+            },
+            {
+              "name": "city",
+              "meaning": "addressRegion"
+            },
+            {
+              "name": "street",
+              "meaning": "streetAddress"
+            },
+            {
+              "name": "postalCode",
+              "meaning": "postalCode"
+            }
+          ]
+        },
+        {
+          "name": "country",
+          
+          "meaning": "addressCountry"
+        },
+        {
+          "name": "city",
+          "meaning": "addressRegion"
+        },
+        {
+          "name": "street",
+          "meaning": "streetAddress"
+        },
+        {
+          "name": "postalCode",
+          "meaning": "postalCode"
+        }
+      ]
+    }
+  ]
+}

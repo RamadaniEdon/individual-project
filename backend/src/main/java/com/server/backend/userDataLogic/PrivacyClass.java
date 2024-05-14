@@ -2,12 +2,12 @@ package com.server.backend.userDataLogic;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.Id;
+// import jakarta.persistence.Id;
 
 @Document(collection = "PrivacyClasses")
 public class PrivacyClass {
   
-  @Id
+  // @Id
   private String id;
   private String name;
   private String description;
