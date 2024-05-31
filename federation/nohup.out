@@ -1,0 +1,44 @@
+CompileCommand: exclude com/intellij/openapi/vfs/impl/FilePartNodeRoot.trieDescend bool exclude = true
+2024-05-15 07:37:05,848 [    330]   WARN - #c.i.i.p.PluginManager - <resource-bundle>messages.DataGripBundle</resource-bundle> tag is found in an xml descriptor included into the platform part of the IDE but the platform part uses predefined bundles (e.g. ActionsBundle for actions) anyway; this tag must be replaced by a corresponding attribute in some inner tags (e.g. by 'resource-bundle' attribute in 'actions' tag)
+2024-05-15 07:38:20,670 [  75152]   WARN - #c.i.e.r.RemoteProcessSupport - [To redirect Truffle log output to a file use one of the following options:
+2024-05-15 07:38:20,671 [  75153]   WARN - #c.i.e.r.RemoteProcessSupport - * '--log.file=<path>' if the option is passed using a guest language launcher.
+2024-05-15 07:38:20,671 [  75153]   WARN - #c.i.e.r.RemoteProcessSupport - 
+2024-05-15 07:38:20,675 [  75157]   WARN - #c.i.e.r.RemoteProcessSupport - * '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+2024-05-15 07:38:20,676 [  75158]   WARN - #c.i.e.r.RemoteProcessSupport - * Configure logging using the polyglot embedding API.]
+2024-05-15 07:38:20,677 [  75159]   WARN - #c.i.e.r.RemoteProcessSupport - [engine] WARNING: The polyglot context is using an implementation that does not support runtime compilation.
+2024-05-15 07:38:20,678 [  75160]   WARN - #c.i.e.r.RemoteProcessSupport - The guest application code will therefore be executed in interpreted mode only.
+2024-05-15 07:38:20,679 [  75161]   WARN - #c.i.e.r.RemoteProcessSupport - Execution only in interpreted mode will strongly impact the guest application performance.
+2024-05-15 07:38:20,679 [  75161]   WARN - #c.i.e.r.RemoteProcessSupport - For more information on using GraalVM see https://www.graalvm.org/java/quickstart/.
+2024-05-15 07:38:20,684 [  75166]   WARN - #c.i.e.r.RemoteProcessSupport - To disable this warning the '--engine.WarnInterpreterOnly=false' option or use the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+2024-05-15 07:38:21,492 [  75974]   WARN - #c.i.e.r.RemoteProcessSupport - May 15, 2024 4:38:21 AM com.mongodb.diagnostics.logging.Loggers shouldUseSLF4J
+2024-05-15 07:38:21,493 [  75975]   WARN - #c.i.e.r.RemoteProcessSupport - WARNING: SLF4J not found on the classpath.  Logging is disabled for the 'org.mongodb.driver' component
+2024-05-15 07:38:45,161 [  99643]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:38:45,162 [  99644]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:38:45,182 [  99664]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:38:45,183 [  99665]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:38:45,290 [  99772]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:38:45,290 [  99772]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:40:05,377 [ 179859]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:40:05,378 [ 179860]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:40:05,389 [ 179871]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:40:05,390 [ 179872]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:40:05,408 [ 179890]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:40:05,408 [ 179890]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:42:26,269 [ 320751]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:42:26,270 [ 320752]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:42:26,296 [ 320778]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:42:26,296 [ 320778]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:42:26,318 [ 320800]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:42:26,319 [ 320801]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:44:11,500 [ 425982]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:44:11,501 [ 425983]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:44:11,511 [ 425993]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:44:11,511 [ 425993]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:44:11,526 [ 426008]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:44:11,541 [ 426023]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:44:11,594 [ 426076]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:44:11,594 [ 426076]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField 'lastUse' for index Document{{v=2, key=Document{{lastUse=1}}, name=lsidTTLIndex, expireAfterSeconds=1800}}
+2024-05-15 07:44:11,604 [ 426086]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:45:06,756 [ 481238]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:45:06,767 [ 481249]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
+2024-05-15 07:45:06,784 [ 481266]   WARN - #c.i.e.r.RemoteProcessSupport - MongoJDBC discover index cannot find metaField '_id' for index Document{{v=2, key=Document{{_id=1}}, name=_id_}}
