@@ -8,8 +8,10 @@ public class UserModel {
 
   @Id
   private String id;
-  private String field1;
-  private String field2;
+  private String afm;
+  private String name;
+  private String surname;
+  private String password;
 
   //generate getters and setters
   public String getId() {
@@ -20,19 +22,36 @@ public class UserModel {
     this.id = id;
   }
 
-  public String getField1() {
-    return field1;
+  public String getAfm() {
+    return afm;
   }
 
-  public void setField1(String field1) {
-    this.field1 = field1;
+  public void setAfm(String field1) {
+    this.afm = field1;
   }
 
-  public String getField2() {
-    return field2;
+  public String getName() {
+    return name;
   }
 
-  public void setField2(String field2) {
-    this.field2 = field2;
+  public void setName(String field2) {
+    this.name = field2;
   }
+
+  public String getSurname() {
+    return surname;
+  }
+
+  public void setSurname(String field3) {
+    this.surname = field3;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
 }

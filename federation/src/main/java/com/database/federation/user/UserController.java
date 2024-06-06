@@ -10,6 +10,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.database.federation.configurations.Protected;
+import com.database.federation.utils.JwtObject;
+import com.database.federation.utils.JwtUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,15 +25,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
   private final UserService userService;
+  private final PasswordService passwordService;
+  @Autowired
+  private JwtUtils jwtUtils;
 
   @Autowired
-  public UserController(UserService userService) {
+  public UserController(UserService userService, PasswordService passwordService) {
     this.userService = userService;
+    this.passwordService = passwordService;
   }
 
+  
+
+    @PostMapping("/generateToken")
+    public String generateToken() throws JsonProcessingException {
+        JwtObject exampleObject = new JwtObject("John");
+        long expirationTimeMillis = 3600000; // 1 hour
+        return jwtUtils.generateToken(exampleObject, expirationTimeMillis);
+    }
+
+    @GetMapping("/parseToken")
+    public JwtObject parseToken(@RequestParam String token) throws JsonProcessingException {
+        return jwtUtils.parseToken(token, JwtObject.class);
+    }
+
+
+  
   @PostMapping("/users")
   public ResponseEntity<String> addDocument(@RequestBody UserModel user) {
     try {
+      user.setPassword(passwordService.hashPassword(user.getPassword()));
       UserModel addedUser = userService.addUser(user);
       return new ResponseEntity<>("Document added successfully with id: " + addedUser.getId(), HttpStatus.CREATED);
     } catch (Exception e) {
@@ -33,8 +62,9 @@ public class UserController {
     }
   }
 
+  @Protected
   @GetMapping("/users/{id}")
-  public ResponseEntity<UserModel> getUserById(@PathVariable String id) {
+  public ResponseEntity<UserModel> getUserById(@PathVariable String id)  {
     try {
       UserModel user = userService.findUserById(id);
       if (user != null) {

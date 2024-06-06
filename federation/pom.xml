@@ -41,7 +41,33 @@
 			<artifactId>owlapi-distribution</artifactId>
 			<version>5.5.0</version>
 		</dependency>
+	
+		<dependency>
+    	<groupId>org.springframework.security</groupId>
+    	<artifactId>spring-security-core</artifactId>
+    	<version>5.8.4</version> <!-- Use the latest version available -->
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.3</version> <!-- Use the latest version available -->
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.3</version> <!-- Use the same version as jjwt-api -->
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.3</version> <!-- Use the same version as jjwt-api -->
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
+
 
 	<build>
 		<plugins>
