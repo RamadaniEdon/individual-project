@@ -16,7 +16,6 @@ import com.database.federation.utils.JwtObject;
 import com.database.federation.utils.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,8 +33,6 @@ public class UserController {
     this.userService = userService;
     this.passwordService = passwordService;
   }
-
-  
 
     @PostMapping("/generateToken")
     public String generateToken() throws JsonProcessingException {
