@@ -2,8 +2,7 @@
 FROM mongo:latest
 
 # Set environment variables for MongoDB
-ENV MONGO_INITDB_DATABASE=databaseFederation
+ENV MONGO_INITDB_DATABASE=orders
 
 # Expose MongoDB default port
 EXPOSE 27017
-

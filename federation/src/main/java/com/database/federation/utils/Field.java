@@ -4,17 +4,35 @@ import java.util.List;
 
 public class Field {
   private String name;
+  private FieldType fieldType;
   private String meaning;
-  private boolean foreignKey;
-  private boolean datatype;
+  private String rangeClass;
   private List<Field> fields;
+  private String foreignKey;
 
-  public String getName() {
-    return name;
+
+  public String getForeignKey() {
+    return foreignKey;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setForeignKey(String foreignKey) {
+    this.foreignKey = foreignKey;
+  }
+
+  public String getRangeClass() {
+    return rangeClass;
+  }
+
+  public void setRangeClass(String rangeClass) {
+    this.rangeClass = rangeClass;
+  }
+
+  public List<Field> getFields() {
+    return fields;
+  }
+
+  public void setFields(List<Field> fields) {
+    this.fields = fields;
   }
 
   public String getMeaning() {
@@ -25,28 +43,20 @@ public class Field {
     this.meaning = meaning;
   }
 
-  public boolean isForeignKey() {
-    return foreignKey;
+  public String getName() {
+    return name;
   }
 
-  public void setForeignKey(boolean foreignKey) {
-    this.foreignKey = foreignKey;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public boolean isDatatype() {
-    return datatype;
+  public void setFieldType(FieldType fieldType) {
+    this.fieldType = fieldType;
   }
 
-  public void setDatatype(boolean datatype) {
-    this.datatype = datatype;
-  }
-
-  public List<Field> getFields() {
-    return fields;
-  }
-
-  public void setFields(List<Field> fields) {
-    this.fields = fields;
+  public FieldType getFieldType() {
+    return fieldType;
   }
 
 }

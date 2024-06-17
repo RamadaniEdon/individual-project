@@ -40,7 +40,7 @@ public class UserController {
         long expirationTimeMillis = 3600000; // 1 hour
         return jwtUtils.generateToken(exampleObject, expirationTimeMillis);
     }
-
+    
     @GetMapping("/parseToken")
     public JwtObject parseToken(@RequestParam String token) throws JsonProcessingException {
         return jwtUtils.parseToken(token, JwtObject.class);

@@ -1,52 +1,43 @@
 package com.database.federation.ontology;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.nio.file.Path;
-import java.io.File;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
-
 import com.database.federation.utils.Collection;
 import com.database.federation.utils.DatabaseForm;
 import com.database.federation.utils.Field;
-
+import com.database.federation.utils.FieldType;
 public class OntologyService {
+
+  public static final String CATEGORY_ONTOLOGY_PATH = "./ontologies/categories.owl";
+  public static final String CATEGORY_ONTOLOGY_URL = "http://localhost:8081/ontologies/categories";
 
   private static final String SCHEMA_ORG_URI = "https://raw.githubusercontent.com/schemaorg/schemaorg/main/data/releases/26.0/schemaorg.owl";
   private static final String SCHEMA_ORG_PREFIX = "https://schema.org/";
-  private static OWLOntologyManager manager;
-  private static OWLOntology schemaOrgOntology;
+  private OWLOntologyManager manager;
+  private Ontology schemaOrgOntology;
+  private Ontology categoriesOntology;
   private static String newOntologyPrefix;
   private static int indirections;
 
-  static {
+  public OntologyService() throws Exception {
+    schemaOrgOntology = new Ontology(SCHEMA_ORG_PREFIX, SCHEMA_ORG_URI);
+    categoriesOntology = new Ontology(CATEGORY_ONTOLOGY_URL, CATEGORY_ONTOLOGY_PATH, false);
     manager = OWLManager.createOWLOntologyManager();
-    try {
-      loadSchemaOntology();
-    } catch (Exception e) {
-      System.out.println("Failed to load schema.org ontology: " + e.getMessage());
-    }
-    indirections = 0;
-    // newOntologyPrefix = "http://localhost:8081/ontology/"; //ma vone e hekiiiii
+  }
+
+  private static String getNewOntologyPrefix(DatabaseForm dbForm) {
+    return "http://localhost:8081/databases/"+dbForm.getId()+"/ontology";
   }
 
   private static void setNewOntologyPrefix(DatabaseForm form) {
     newOntologyPrefix = "http://localhost:8081/ontology/" + form.getId() + "/";
   }
 
-  public static void mapDatabaseToOntology(DatabaseForm form) throws Exception {
+  public void mapDatabaseToOntology(DatabaseForm form) throws Exception {
     // This method will map the database form to the ontology
     // Create OWLOntologyManager
 
@@ -54,45 +45,98 @@ public class OntologyService {
     // manager.loadOntologyFromOntologyDocument(IRI.create(SCHEMA_ORG_URI));
 
     // Create an empty ontology
-    OWLOntology ontology = manager.createOntology();
+    Ontology ontology = new Ontology(getNewOntologyPrefix(form), form.getId() + ".owl", true);
     indirections = 0;
     setNewOntologyPrefix(form);
     // Add import declaration to the ontology
-    OWLImportsDeclaration importDeclaration = manager.getOWLDataFactory()
+    OWLImportsDeclaration importSchemaDeclaration = manager.getOWLDataFactory()
         .getOWLImportsDeclaration(IRI.create(SCHEMA_ORG_URI));
-    manager.applyChange(new AddImport(ontology, importDeclaration));
+
+    OWLImportsDeclaration importCategoriesDeclaration = manager.getOWLDataFactory()
+        .getOWLImportsDeclaration(IRI.create(CATEGORY_ONTOLOGY_URL));
+
+    ontology.addImportDeclaration(importSchemaDeclaration);
+    ontology.addImportDeclaration(importCategoriesDeclaration);
 
     for (Collection c : form.getCollections()) {
-      addEquivalentClass(ontology, c.getCollectionName(), c.getMeaning());
+      ontology.addSubClass("#"+c.getCollectionName(), c.getMeaning(), schemaOrgOntology);
 
       for (Field f : c.getFields()) {
-        mapFieldRecursively(ontology, f, c.getMeaning(),  c.getCollectionName(), c.getCollectionName());
+        mapFieldAgain(
+          ontology, 
+          f, 
+          ontology.prefix + "#"+c.getCollectionName(), 
+          c.getCollectionName()
+        );
       }
     }
 
-    // addEquivalentClass(ontology, "myClassStr", "schemaClassStr");
-    // addSubClass(ontology, "myClassStr", "schemaClassStr");
-    // addSubObjectProperty(ontology, "myObjectPropertyStr", "schemaObjectPropertyStr");
-    // addEquivalentObjectProperty(ontology, "myObjectPropertyStr", "schemaObjectPropertyStr");
-    // addSubDatatypeProperty(ontology, "myDatatypePropertyStr", "schemaDatatypePropertyStr");
-    // addEquivalentDatatype(ontology, "myDatatypeStr", "schemaDatatypeStr");
 
-    createOntologyFile(ontology, "ontology_" + form.getId() + ".owl");
+    ontology.createOntologyFile();
   }
 
-  private static void mapFieldRecursively(OWLOntology ontology, Field f, String parent, String prefix, String collectionName) throws Exception{
-    if (!isPropertyOfClass(f.getMeaning(), parent)) System.out.println("Gabim " + f.getMeaning() + parent);
-    if (!f.isDatatype()) {
-      if (!isObjectProperty(f.getMeaning())) System.out.println("Gabim " + f.getMeaning());
-      indirections++;
-      addEquivalentClass(ontology, prefix+"#"+f.getName()+"-"+ indirections, f.getName());
-      addEquivalentObjectProperty(ontology, prefix +"#"+f.getMeaning()+"-"+indirections, f.getMeaning());
-      for(Field ff : f.getFields()){
-        mapFieldRecursively(ontology, ff, f.getName() , f.getName()+"-"+ indirections, collectionName);
+  private void mapFieldAgain(Ontology ont, Field f, String parent, String collectionName) throws Exception {
+    indirections++;
+    if (f.getFieldType() == FieldType.FOREIGN) {
+
+      String propertyName = "#" + collectionName + "-" + f.getName();
+      String foreignFieldName = "#" + f.getForeignKey();
+      String rangeClass = ont.prefix + "#" + f.getRangeClass();
+
+      ont.addRelatedObjectProperties(
+        propertyName,
+        foreignFieldName,
+        new ArrayList<>(Arrays.asList(parent)),
+        new ArrayList<>(Arrays.asList(rangeClass))
+      );
+    }
+    else if(f.getFieldType() == FieldType.OBJECT_PROPERTY){
+
+      String tempClassName = "#"+f.getRangeClass()+"-"+ indirections;
+      String tempPropertyName = "#"+f.getName()+"-"+indirections;
+      String rangeClass = ont.prefix+"#"+f.getRangeClass()+"-"+ indirections;
+
+
+      ont.addSubClass(
+        tempClassName,
+        f.getRangeClass(),
+        schemaOrgOntology
+      );
+      ont.addSubObjectProperty(
+        tempPropertyName,
+        f.getName(),
+        schemaOrgOntology,
+        new ArrayList<>(Arrays.asList(parent)),
+        new ArrayList<>(Arrays.asList(rangeClass))
+      );
+
+      for(Field field : f.getFields()){
+        mapFieldAgain(ont, field, rangeClass, collectionName);
       }
-    } else {
-      if(isObjectProperty(f.getMeaning())) addEquivalentObjectProperty(ontology,prefix+ "#" + f.getName(), f.getMeaning());
-      else addEquivalentDatatype(ontology, prefix + "#" +f.getName(), f.getMeaning());
+    }
+    else {
+
+      String propertyName = "#" + f.getName();
+      
+      if(schemaOrgOntology.isObjectProperty(f.getMeaning())){
+
+        String rangeClass = categoriesOntology.prefix + "#UserDataReference";
+        
+        ont.addSubObjectProperty(
+          propertyName,
+          f.getMeaning(),
+          schemaOrgOntology,
+          new ArrayList<>(Arrays.asList(parent)),
+          new ArrayList<>(Arrays.asList(rangeClass))
+        );
+      } else {
+        ont.addSubDataProperty(
+          propertyName,
+          f.getMeaning(),
+          schemaOrgOntology,
+          new ArrayList<>(Arrays.asList(parent))
+        );
+      }
     }
   }
 
@@ -102,265 +146,52 @@ public class OntologyService {
     return true;
   }
 
-  // Save Ontology to Directory
-  public static void createOntologyFile(OWLOntology ontology, String fileName) throws Exception {
+  // // DONE
+  // public static void addEquivalentObjectProperty(OWLOntology ontology, String
+  // myPropertyStr, String schemaPropertyStr) {
+  // // Define the IRIs for banimi and address
+  // IRI myPropertyIRI = IRI.create(newOntologyPrefix + myPropertyStr);
+  // IRI schemaPropertyIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaPropertyStr);
 
-    // Get current directory
-    Path currentDirectory = Paths.get("./ontologies").toAbsolutePath();
+  // // Create OWLObjectProperty objects for banimi and address
+  // OWLObjectProperty myProperty =
+  // manager.getOWLDataFactory().getOWLObjectProperty(myPropertyIRI);
+  // OWLObjectProperty schemaProperty =
+  // manager.getOWLDataFactory().getOWLObjectProperty(schemaPropertyIRI);
 
-    // Define file path
-    Path filePath = currentDirectory.resolve(fileName);
+  // // Define the subclass axiom stating that mProperty is a subproperty of
+  // // schemaProperty
+  // OWLEquivalentObjectPropertiesAxiom equivalentPropertiesAxiom =
+  // manager.getOWLDataFactory()
+  // .getOWLEquivalentObjectPropertiesAxiom(myProperty, schemaProperty);
 
-    // Create file
-    File file = filePath.toFile();
+  // // Add the subproperty axiom to the ontology
+  // manager.addAxiom(ontology, equivalentPropertiesAxiom);
+  // }
 
-    // Save the ontology to file
-    manager.saveOntology(ontology, new FileOutputStream(file));
-  }
+  // // DONE
+  // public static void addEquivalentDatatype(OWLOntology ontology, String
+  // myPropertyStr, String schemaPropertyStr) {
+  // // Define the IRIs for closeTime and closes
+  // IRI myPropertyIRI = IRI.create(newOntologyPrefix + myPropertyStr);
+  // IRI schemaPropertyIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaPropertyStr);
 
-  // Add equivalent class axiom to ontology - DONE
-  public static void addEquivalentClass(OWLOntology ontology, String myClassStr, String schemaClassStr) {
-    IRI myClassIRI = IRI.create(newOntologyPrefix + myClassStr);
-    OWLClass myClass = manager.getOWLDataFactory().getOWLClass(myClassIRI);
+  // // Create OWLDatatypeProperty objects for closeTime and closes
+  // OWLDataProperty myProperty =
+  // manager.getOWLDataFactory().getOWLDataProperty(myPropertyIRI);
+  // OWLDataProperty schemaProperty =
+  // manager.getOWLDataFactory().getOWLDataProperty(schemaPropertyIRI);
 
-    // Define the class equivalent to schema.org:ActivateAction
-    IRI schemaClassIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaClassStr);
-    OWLClass schemaClass = manager.getOWLDataFactory().getOWLClass(schemaClassIRI);
+  // // Define the equivalent property axiom stating that myProperty is equivalent
+  // to
+  // // schemaProperty
+  // OWLEquivalentDataPropertiesAxiom equivalentPropertiesAxiom =
+  // manager.getOWLDataFactory()
+  // .getOWLEquivalentDataPropertiesAxiom(myProperty, schemaProperty);
 
-    // Define the equivalence axiom
-    OWLEquivalentClassesAxiom equivalentClassesAxiom = manager.getOWLDataFactory()
-        .getOWLEquivalentClassesAxiom(myClass, schemaClass);
-
-    // Add the equivalence axiom to the ontology
-    manager.addAxiom(ontology, equivalentClassesAxiom);
-  }
-
-  // DONE
-  public static void addSubClass(OWLOntology ontology, String myClassStr, String schemaClassStr) {
-    // Define the IRIs for myClass and ActivateAction
-    IRI myClassIRI = IRI.create(newOntologyPrefix + myClassStr);
-    IRI schemaClassIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaClassStr);
-
-    // Create OWLClass objects for myClass and ActivateAction
-    OWLClass myClass = manager.getOWLDataFactory().getOWLClass(myClassIRI);
-    OWLClass schemaClass = manager.getOWLDataFactory().getOWLClass(schemaClassIRI);
-
-    // Define the subclass axiom stating that myClass is a subclass of
-    // schemaClass
-    OWLSubClassOfAxiom subclassAxiom = manager.getOWLDataFactory().getOWLSubClassOfAxiom(myClass, schemaClass);
-
-    // Add the subclass axiom to the ontology
-    manager.addAxiom(ontology, subclassAxiom);
-  }
-
-  // DONE
-  public static void addSubObjectProperty(OWLOntology ontology, String myPropertyStr, String schemaPropertyStr) {
-    // Define the IRIs for banimi and address
-    IRI myPropertyIRI = IRI.create(newOntologyPrefix + myPropertyStr);
-    IRI schemaPropertyIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaPropertyStr);
-
-    // Create OWLObjectProperty objects for banimi and address
-    OWLObjectProperty myProperty = manager.getOWLDataFactory().getOWLObjectProperty(myPropertyIRI);
-    OWLObjectProperty schemaProperty = manager.getOWLDataFactory().getOWLObjectProperty(schemaPropertyIRI);
-
-    // Define the subclass axiom stating that myProperty is a subproperty of
-    // schemaProperty
-    OWLSubObjectPropertyOfAxiom subPropertyAxiom = manager.getOWLDataFactory().getOWLSubObjectPropertyOfAxiom(
-        myProperty,
-        schemaProperty);
-
-    // Add the subproperty axiom to the ontology
-    manager.addAxiom(ontology, subPropertyAxiom);
-  }
-
-  // DONE
-  public static void addEquivalentObjectProperty(OWLOntology ontology, String myPropertyStr, String schemaPropertyStr) {
-    // Define the IRIs for banimi and address
-    IRI myPropertyIRI = IRI.create(newOntologyPrefix + myPropertyStr);
-    IRI schemaPropertyIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaPropertyStr);
-
-    // Create OWLObjectProperty objects for banimi and address
-    OWLObjectProperty myProperty = manager.getOWLDataFactory().getOWLObjectProperty(myPropertyIRI);
-    OWLObjectProperty schemaProperty = manager.getOWLDataFactory().getOWLObjectProperty(schemaPropertyIRI);
-
-    // Define the subclass axiom stating that mProperty is a subproperty of
-    // schemaProperty
-    OWLEquivalentObjectPropertiesAxiom equivalentPropertiesAxiom = manager.getOWLDataFactory()
-        .getOWLEquivalentObjectPropertiesAxiom(myProperty, schemaProperty);
-
-    // Add the subproperty axiom to the ontology
-    manager.addAxiom(ontology, equivalentPropertiesAxiom);
-  }
-
-  // DONE
-  public static void addSubDatatypeProperty(OWLOntology ontology, String myPropertyStr, String schemaPropertyStr) {
-    // Define the IRIs for closeTime and closes
-    IRI myPropertyIRI = IRI.create(newOntologyPrefix + myPropertyStr);
-    IRI schemaPropertyIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaPropertyStr);
-
-    // Create OWLDatatypeProperty objects for closeTime and closes
-    OWLDataProperty myProperty = manager.getOWLDataFactory().getOWLDataProperty(myPropertyIRI);
-    OWLDataProperty schemaProperty = manager.getOWLDataFactory().getOWLDataProperty(schemaPropertyIRI);
-
-    // Define the subclass axiom stating that myProperty is a subproperty of closes
-    OWLSubDataPropertyOfAxiom subPropertyAxiom = manager.getOWLDataFactory().getOWLSubDataPropertyOfAxiom(myProperty,
-        schemaProperty);
-
-    // Add the subproperty axiom to the ontology
-    manager.addAxiom(ontology, subPropertyAxiom);
-  }
-
-  // DONE
-  public static void addEquivalentDatatype(OWLOntology ontology, String myPropertyStr, String schemaPropertyStr) {
-    // Define the IRIs for closeTime and closes
-    IRI myPropertyIRI = IRI.create(newOntologyPrefix + myPropertyStr);
-    IRI schemaPropertyIRI = IRI.create(SCHEMA_ORG_PREFIX + schemaPropertyStr);
-
-    // Create OWLDatatypeProperty objects for closeTime and closes
-    OWLDataProperty myProperty = manager.getOWLDataFactory().getOWLDataProperty(myPropertyIRI);
-    OWLDataProperty schemaProperty = manager.getOWLDataFactory().getOWLDataProperty(schemaPropertyIRI);
-
-    // Define the equivalent property axiom stating that myProperty is equivalent to
-    // schemaProperty
-    OWLEquivalentDataPropertiesAxiom equivalentPropertiesAxiom = manager.getOWLDataFactory()
-        .getOWLEquivalentDataPropertiesAxiom(myProperty, schemaProperty);
-
-    // Add the equivalent property axiom to the ontology
-    manager.addAxiom(ontology, equivalentPropertiesAxiom);
-  }
-
-  // DONE
-  public static boolean isPropertyOfClass(String propertyStr, String classStr) throws Exception {
-    // Get Domain Classes of the property
-    List<String> domainClasses = getDomainClasses(propertyStr);
-    Set<String> superClasses = getSuperClasses(classStr);
-    // add the class itself to the superclasses to check for it as well
-    superClasses.add(classStr);
-
-    for (String domainClass : domainClasses) {
-      if (superClasses.contains(domainClass)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  // DONE
-  public static boolean isObjectProperty(String propertyName) throws Exception {
-    // Check if the property is an object property
-
-    OWLDataProperty dataProperty = schemaOrgOntology.getOWLOntologyManager().getOWLDataFactory()
-        .getOWLDataProperty(IRI.create(SCHEMA_ORG_PREFIX + propertyName));
-    OWLObjectProperty objectProperty = schemaOrgOntology.getOWLOntologyManager().getOWLDataFactory()
-        .getOWLObjectProperty(IRI.create(SCHEMA_ORG_PREFIX + propertyName));
-
-    if (schemaOrgOntology.containsDataPropertyInSignature(dataProperty.getIRI())) {
-      return false;
-    } else if (schemaOrgOntology.containsObjectPropertyInSignature(objectProperty.getIRI())) {
-      return true;
-    } else {
-      throw new IllegalArgumentException(propertyName + " is neither a datatype property nor an object property.");
-    }
-  }
-
-  // DONE
-  // http://www.w3.org/1999/02/22-rdf-syntax-ns#type /////
-  // This is also and object property but not in the schema.org ontology but used
-  // there
-  public static boolean acceptsDataTypes(String propertyStr) throws Exception {
-    if (!isObjectProperty(propertyStr))
-      return true;
-
-    List<String> rangeClasses = getRangeClasses(propertyStr);
-
-    for (String rangeClass : rangeClasses) {
-      Set<String> superClasses = getSuperClasses(rangeClass);
-      if (superClasses.contains("DataType")) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  // DONE
-  public static Set<String> getSuperClasses(String className) throws Exception {
-    // Get the class object for the given class name
-    OWLDataFactory factory = manager.getOWLDataFactory();
-    OWLClass clazz = factory.getOWLClass(IRI.create(SCHEMA_ORG_PREFIX + className));
-
-    // Create a reasoner to infer superclasses
-    OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
-    OWLReasoner reasoner = reasonerFactory.createReasoner(schemaOrgOntology);
-
-    // Retrieve all superclasses of the given class
-    Set<OWLClass> superClasses = reasoner.getSuperClasses(clazz, false).getFlattened();
-
-    // Extract class names from IRIs
-    Set<String> superClassNames = new HashSet<>();
-    for (OWLClass superClass : superClasses) {
-      superClassNames.add(superClass.getIRI().getFragment());
-    }
-
-    return superClassNames;
-  }
-
-  // DONE
-  public static List<String> getDomainClasses(String propertyName) throws Exception {
-    // Load the Schema.org ontology from the URL
-
-    // Get the property object for the given property name
-    OWLDataFactory factory = manager.getOWLDataFactory();
-    OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(SCHEMA_ORG_PREFIX + propertyName));
-
-    return schemaOrgOntology.objectPropertyDomainAxioms(property)
-        .flatMap(axiom -> getClassNamesDomainAxiom(axiom, schemaOrgOntology))
-        .distinct() // Remove duplicates
-        .collect(Collectors.toList());
-  }
-
-  // Below is private for above depended
-  private static Stream<String> getClassNamesDomainAxiom(OWLObjectPropertyDomainAxiom axiom, OWLOntology ontology) {
-    OWLClassExpression domainExpression = axiom.getDomain();
-    if (domainExpression instanceof OWLObjectUnionOf) {
-      OWLObjectUnionOf union = (OWLObjectUnionOf) domainExpression;
-      return union.getOperands().stream()
-          .map(operand -> ((OWLClass) operand).getIRI().getFragment());
-    } else {
-      return Stream.empty();
-    }
-  }
-
-  // DONE
-  public static List<String> getRangeClasses(String propertyName) throws Exception {
-    // Get the property object for the given property name
-    OWLDataFactory factory = manager.getOWLDataFactory();
-    OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(SCHEMA_ORG_PREFIX + propertyName));
-
-    return schemaOrgOntology.objectPropertyRangeAxioms(property)
-        .flatMap(axiom -> getClassNamesRangeAxiom(axiom, schemaOrgOntology))
-        .distinct() // Remove duplicates
-        .collect(Collectors.toList());
-  }
-
-  // Below is private for above depended
-  private static Stream<String> getClassNamesRangeAxiom(OWLObjectPropertyRangeAxiom axiom, OWLOntology ontology) {
-    OWLClassExpression domainExpression = axiom.getRange();
-    if (domainExpression instanceof OWLObjectUnionOf) {
-      OWLObjectUnionOf union = (OWLObjectUnionOf) domainExpression;
-      return union.getOperands().stream()
-          .map(operand -> ((OWLClass) operand).getIRI().getFragment());
-    } else {
-      return Stream.empty();
-    }
-  }
-
-  // DONE - Load Schema.org ontology
-  public static void loadSchemaOntology() throws Exception {
-    InputStream inputStream = new URL(SCHEMA_ORG_URI).openStream();
-    schemaOrgOntology = manager.loadOntologyFromOntologyDocument(inputStream);
-  }
+  // // Add the equivalent property axiom to the ontology
+  // manager.addAxiom(ontology, equivalentPropertiesAxiom);
+  // }
 
   // FSHIJE SE PO BOHET MUT
   public static void main(String[] args) {
@@ -388,21 +219,46 @@ public class OntologyService {
       // }
       // }
 
-      List<String> rangeClasses = getRangeClasses("closes");
-      System.out.println("Range classes: " + rangeClasses);
+      //////////////////////////// UPDATE THESE TESTS?/////////////////////////
+      // List<String> rangeClasses = getRangeClasses("closes");
+      // System.out.println("Range classes: " + rangeClasses);
 
-      System.out.println("Is it??:: " + isPropertyOfClass("identifier", "OrderItem"));
+      // System.out.println("Is it??:: " + isPropertyOfClass("identifier",
+      // "OrderItem"));
 
-      List<String> domainClasses = getDomainClasses("address");
-      System.out.println("Domain classes: " + domainClasses);
+      // List<String> domainClasses = getDomainClasses("address");
+      // System.out.println("Domain classes: " + domainClasses);
 
-      Set<String> superClasses = getSuperClasses("Person");
-      System.out.println("Super classes: " + superClasses);
+      // Set<String> superClasses = getSuperClasses("Person");
+      // System.out.println("Super classes: " + superClasses);
 
-      System.out.println("Object property: " + isObjectProperty("address"));
-      System.out.println(acceptsDataTypes("address"));
+      // System.out.println("Object property: " + isObjectProperty("address"));
+      // System.out.println(acceptsDataTypes("address"));
     } catch (Exception e) {
       System.out.println("Failed to map database to ontology: " + e.getMessage());
     }
+
+    try {
+      // OWLOntology ontology = manager.createOntology();
+      // addSubObjectProperty(ontology, "adresa", "address");
+      // // createOntologyFile(ontology, "ontology123.owl");
+      // System.out.println("sadfasdfas");
+      // List<String> domainClasses = getDomainClasses1(ontology,
+      // "https://asdfasdf.com/nulladresa");
+      // System.out.println("Domain sadfdsfclasses: " + domainClasses);
+      // OntologyService service = new OntologyService();
+      // service.printClassesInDomain("./ontologies/ontology123.owl", "#nulladresa");
+
+      ///////////////////// UPDATE TESTS////////////////////////////
+
+      // OWLOntology ontology = loadOntologyFromFile("./ontologies/ontology1234.owl");
+      // OWLOntology ontology = manager.createOntology();
+      // addSubObjectProperty(ontology, "edon", "sedon");
+      // createOntologyFile(ontology, "./ontology1234.owl");
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
+
 }

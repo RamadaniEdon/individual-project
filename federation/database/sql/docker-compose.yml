@@ -1,20 +1,17 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: sqltest
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
     ports:
       - "10010:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: sqltest
+      MYSQL_ROOT_PASSWORD: root_pass
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     restart: always
-  adminer:
-    image: adminer
-    container_name: adminer
-    ports:
-      - "10011:8080"
-    restart: always
+
+volumes:
+  db_data:
