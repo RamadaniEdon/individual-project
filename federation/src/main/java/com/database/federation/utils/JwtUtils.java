@@ -8,13 +8,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtils {
 
-  private static final Key key = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
+  private static final String SECRET_KEY = "my-32-character-ultra-secure-and-ultra-long-secret";
+  private static final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public String generateToken(Object object, long expirationTime) throws JsonProcessingException {

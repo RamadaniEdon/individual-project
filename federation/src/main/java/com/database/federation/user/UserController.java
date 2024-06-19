@@ -36,8 +36,8 @@ public class UserController {
 
     @PostMapping("/generateToken")
     public String generateToken() throws JsonProcessingException {
-        JwtObject exampleObject = new JwtObject("John");
-        long expirationTimeMillis = 3600000; // 1 hour
+        JwtObject exampleObject = new JwtObject("12345678");
+        long expirationTimeMillis = 36000000; // 1 hour
         return jwtUtils.generateToken(exampleObject, expirationTimeMillis);
     }
     

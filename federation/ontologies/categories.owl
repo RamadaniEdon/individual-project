@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.semanticweb.org/edon/ontologies/2024/5/untitled-ontology-10/"
-     xml:base="http://www.semanticweb.org/edon/ontologies/2024/5/untitled-ontology-10/"
+<rdf:RDF xmlns="http://localhost:8081/ontologies/categories#"
+     xml:base="http://localhost:8081/ontologies/categories"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:schema="https://schema.org/">
+     xmlns:schema="https://schema.org/"
+     xmlns:categories="http://localhost:8081/ontologies/categories#">
     <owl:Ontology rdf:about="http://localhost:8081/ontologies/categories">
         <owl:imports rdf:resource="https://raw.githubusercontent.com/schemaorg/schemaorg/main/data/releases/26.0/schemaorg.owl"/>
     </owl:Ontology>
@@ -22,10 +23,12 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+
     
 
 
     <!-- http://localhost:8081/ontologies/categories#creatorOfCategory -->
+
 
     <owl:ObjectProperty rdf:about="http://localhost:8081/ontologies/categories#creatorOfCategory">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
@@ -43,10 +46,12 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+
     
 
 
     <!-- http://localhost:8081/ontologies/categories#categoryAccessControl -->
+
 
     <owl:DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#categoryAccessControl">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
@@ -57,6 +62,7 @@
 
     <!-- http://localhost:8081/ontologies/categories#categoryName -->
 
+
     <owl:DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#categoryName">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
         <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
@@ -65,6 +71,7 @@
 
 
     <!-- http://localhost:8081/ontologies/categories#categoryPrice -->
+
 
     <owl:DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#categoryPrice">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
@@ -75,6 +82,7 @@
 
     <!-- http://localhost:8081/ontologies/categories#userDataEntityOrigin -->
 
+
     <owl:DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#userDataEntityOrigin">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
         <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
@@ -84,10 +92,18 @@
 
     <!-- http://localhost:8081/ontologies/categories#userDataIdentifier -->
 
+
     <owl:DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#userDataIdentifier">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
         <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
     </owl:DatatypeProperty>
+    
+
+
+    <!-- https://schema.org/identifier -->
+
+
+    <owl:DatatypeProperty rdf:about="https://schema.org/identifier"/>
     
 
 
@@ -99,10 +115,12 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+
     
 
 
     <!-- http://localhost:8081/ontologies/categories#AccessControlCategory -->
+
 
     <owl:Class rdf:about="http://localhost:8081/ontologies/categories#AccessControlCategory">
         <rdfs:subClassOf rdf:resource="https://schema.org/Thing"/>
@@ -112,11 +130,75 @@
 
     <!-- http://localhost:8081/ontologies/categories#UserDataReference -->
 
+
     <owl:Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference">
         <rdfs:subClassOf rdf:resource="https://schema.org/Thing"/>
     </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#12345678 -->
+
+
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678">
+        <rdf:type rdf:resource="https://schema.org/Person"/>
+        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#12345678.GJYSPRIVATE"/>
+        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#12345678.private"/>
+        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#12345678.public"/>
+        <schema:identifier>12345678</schema:identifier>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#12345678.GJYSPRIVATE -->
+
+
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.GJYSPRIVATE">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
+        <categoryAccessControl>nothing</categoryAccessControl>
+        <categoryName>GJYSPRIVATE</categoryName>
+        <categoryPrice>5.0</categoryPrice>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#12345678.private -->
+
+
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.private">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
+        <categoryAccessControl>no-read-no-write-nothing</categoryAccessControl>
+        <categoryName>private</categoryName>
+        <categoryPrice>23000.0</categoryPrice>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#12345678.public -->
+
+
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.public">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
+        <categoryAccessControl>nothing</categoryAccessControl>
+        <categoryName>public</categoryName>
+        <categoryPrice>5.0</categoryPrice>
+    </owl:NamedIndividual>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

@@ -43,7 +43,7 @@ public class DatabaseController {
     try {
       databaseForm.setUrl(databaseForm.getUrl()+"/");
       DatabaseModel database = new DatabaseModel(databaseForm);
-      database = databaseService.addUser(database);
+      database = databaseService.addDatabase(database);
 
       databaseForm.setId(database.getId());
       ontologyService.mapDatabaseToOntology(databaseForm);

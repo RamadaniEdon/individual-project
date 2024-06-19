@@ -1,14 +1,22 @@
 package com.database.federation.ontology;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import com.database.federation.configurations.Protected;
+import com.database.federation.user.UserModel;
+import com.database.federation.utils.CategoryJson;
+
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 @RestController
@@ -17,7 +25,6 @@ public class OntologyController {
 
   OntologyService ontologyService;
 
-  @Autowired
   public OntologyController() {
     try {
       ontologyService = new OntologyService();
@@ -39,6 +46,32 @@ public class OntologyController {
           .body(resource);
     } catch (Exception ex) {
       return new ResponseEntity<>("Failed to load ontology: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Protected
+  @PostMapping("/categories")
+  public ResponseEntity<String> createNewCategory(@RequestAttribute("userAfm") String userAfm, @RequestBody CategoryJson categoryInfo) {
+    try {
+
+      ontologyService.addCategory(categoryInfo, userAfm);
+
+      return new ResponseEntity<>("Category created successfully", HttpStatus.CREATED);
+    } catch (Exception e) {
+      return new ResponseEntity<>("Failed to create category: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Protected
+  @GetMapping("/categories/user")
+  public ResponseEntity<List<CategoryJson>> getCategories(@RequestAttribute("userAfm") String userAfm) {
+    try {
+
+      List<CategoryJson> categories = ontologyService.getCategories(userAfm);
+
+      return new ResponseEntity<>(categories, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR );
     }
   }
   

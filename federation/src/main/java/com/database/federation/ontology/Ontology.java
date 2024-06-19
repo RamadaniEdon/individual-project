@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,9 @@ import java.util.stream.Stream;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.model.AddImport;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -25,6 +28,7 @@ import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -37,6 +41,10 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
+
+import com.database.federation.userData.Entity;
+import com.database.federation.userData.Instance;
+import com.database.federation.userData.UserDataGlobalFormat;
 
 public class Ontology {
     public String prefix;
@@ -62,6 +70,19 @@ public class Ontology {
         loadOntologyFromURL(url);
     }
 
+    public Ontology(String prefix, String filename, boolean newOntology, boolean development) throws Exception {
+        this.prefix = prefix;
+        this.filename = filename;
+        manager = OWLManager.createOWLOntologyManager();
+
+        File file = new File(filename);
+        ontology = manager.loadOntologyFromOntologyDocument(file);
+    }
+
+    public OWLOntology getOntology() {
+        return ontology;
+    }
+
     public void addImportDeclaration(OWLImportsDeclaration imports) {
         manager.applyChange(new AddImport(ontology, imports));
     }
@@ -72,7 +93,7 @@ public class Ontology {
     }
 
     public void loadOntologyFromFile(String filePath) throws OWLOntologyCreationException {
-        File file = new File(filePath);
+        File file = new File("./ontologies/" + filePath);
         ontology = manager.loadOntologyFromOntologyDocument(file);
     }
 
@@ -317,6 +338,43 @@ public class Ontology {
         return superClassNames;
     }
 
+    public String getSuperClass(String className) throws Exception {
+        // Get the class object for the given class name
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLClass clazz = factory.getOWLClass(IRI.create(this.prefix + className));
+
+        // Retrieve all superclasses of the given class
+        Set<OWLSubClassOfAxiom> superClassAxioms = this.ontology.getSubClassAxiomsForSubClass(clazz);
+
+        // Extract class names from IRIs
+        for (OWLSubClassOfAxiom superClassAxiom : superClassAxioms) {
+            OWLClassExpression superClass = superClassAxiom.getSuperClass();
+            if (!superClass.isAnonymous()) {
+                return superClass.asOWLClass().getIRI().getFragment();
+            }
+        }
+        return "";
+    }
+
+    public String getSuperProperty(String propertyName) throws Exception {
+        // Get the property object for the given property name
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(this.prefix + propertyName));
+
+        // Retrieve all superproperties of the given property
+        Set<OWLSubObjectPropertyOfAxiom> superPropertyAxioms = this.ontology
+                .getObjectSubPropertyAxiomsForSubProperty(property);
+
+        // Extract property names from IRIs
+        for (OWLSubObjectPropertyOfAxiom superPropertyAxiom : superPropertyAxioms) {
+            OWLObjectPropertyExpression superProperty = superPropertyAxiom.getSuperProperty();
+            if (!superProperty.isAnonymous()) {
+                return superProperty.asOWLObjectProperty().getIRI().getFragment();
+            }
+        }
+        return "";
+    }
+
     public List<String> getDomainClasses(String propertyName) throws Exception {
         // Load the Schema.org ontology from the URL
 
@@ -408,11 +466,201 @@ public class Ontology {
         // IRI orderUserIRI = IRI.create(this.prefix + baseProperty);
         // // Create data property
         // OWLObjectProperty userIdProperty = factory.getOWLObjectProperty(userIdIRI);
-        // OWLObjectProperty orderUserProperty = factory.getOWLObjectProperty(orderUserIRI);
+        // OWLObjectProperty orderUserProperty =
+        // factory.getOWLObjectProperty(orderUserIRI);
         OWLSubPropertyChainOfAxiom propertyChainAxiom = factory.getOWLSubPropertyChainOfAxiom(
                 java.util.Arrays.asList(userIdProperty),
                 orderUserProperty);
 
         manager.addAxiom(ontology, propertyChainAxiom);
     }
+
+    public List<String> getAllClassNames() {
+        return ontology.getClassesInSignature()
+                .stream()
+                .map(OWLClass::getIRI)
+                .map(Object::toString)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getAllSubClassNames() {
+        return ontology.axioms(AxiomType.SUBCLASS_OF)
+                .map(axiom -> axiom.getSubClass())
+                .filter(concept -> concept instanceof OWLClass)
+                .map(concept -> (OWLClass) concept)
+                .map(OWLClass::getIRI)
+                .map(IRI::getFragment)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getClassesNotInRangeOfAnyObjectProperty() {
+        Set<OWLClass> rangeClasses = new HashSet<>();
+
+        ontology.axioms(AxiomType.OBJECT_PROPERTY_RANGE)
+                .forEach(axiom -> {
+                    OWLClassExpression range = axiom.getRange();
+                    if (range instanceof OWLClass) {
+                        rangeClasses.add((OWLClass) range);
+                    } else if (range instanceof OWLObjectUnionOf) {
+                        OWLObjectUnionOf union = (OWLObjectUnionOf) range;
+                        union.operands()
+                                .filter(operand -> operand instanceof OWLClass)
+                                .map(operand -> (OWLClass) operand)
+                                .forEach(rangeClasses::add);
+                    }
+                });
+
+        Set<OWLClass> chainAxiomClasses = ontology.axioms(AxiomType.SUB_PROPERTY_CHAIN_OF)
+                .map(axiom -> (OWLSubPropertyChainOfAxiom) axiom)
+                .map(OWLSubPropertyChainOfAxiom::getSuperProperty)
+                .flatMap(superProperty -> ontology.objectPropertyRangeAxioms(superProperty))
+                .map(OWLObjectPropertyRangeAxiom::getRange)
+                .filter(concept -> concept instanceof OWLClass)
+                .map(concept -> (OWLClass) concept)
+                .collect(Collectors.toSet());
+
+        // print all classes iri in the chainAxiomClasses
+        chainAxiomClasses.forEach(cls -> System.out.println(cls.getIRI()));
+
+        rangeClasses.removeAll(chainAxiomClasses);
+
+        return ontology.getClassesInSignature()
+                .stream()
+                .filter(cls -> !rangeClasses.contains(cls))
+                .map(OWLClass::getIRI)
+                .map(IRI::getFragment)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getTopLevelClasses() {
+        List<String> subClassNames = getAllSubClassNames();
+        List<String> classesNotInRange = getClassesNotInRangeOfAnyObjectProperty();
+
+        return subClassNames.stream()
+                .distinct()
+                .filter(classesNotInRange::contains)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getSomething() {
+        List<String> result = new ArrayList<>();
+        for (OWLAxiom axiom : ontology.getAxioms()) {
+            if (axiom instanceof OWLSubPropertyChainOfAxiom) {
+                OWLSubPropertyChainOfAxiom chainAxiom = (OWLSubPropertyChainOfAxiom) axiom;
+                for (OWLObjectPropertyExpression property : chainAxiom.getPropertyChain()) {
+                    result.add(property.asOWLObjectProperty().getIRI().toString());
+                }
+            }
+        }
+        return result;
+    }
+
+    public String getPropertyFromPropertyChainAxiom(String propertyName) {
+        // Get the property object for the given property name
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(this.prefix + propertyName));
+
+        // Get all axioms of the property
+        Set<OWLSubPropertyChainOfAxiom> propertyChainAxioms = ontology.getAxioms(AxiomType.SUB_PROPERTY_CHAIN_OF);
+
+        // Find the axiom that contains the given property
+        for (OWLSubPropertyChainOfAxiom axiom : propertyChainAxioms) {
+            if (axiom.getSuperProperty().equals(property)) {
+                // Get the first property in the chain
+                return axiom.getPropertyChain().get(0).asOWLObjectProperty().getIRI().getFragment();
+
+            }
+        }
+        return null;
+    }
+
+    public UserDataGlobalFormat getGlobalFormat() throws Exception {
+        UserDataGlobalFormat globalFormat = new UserDataGlobalFormat();
+
+        List<String> topLevelClasses = getTopLevelClasses();
+        List<Entity> entities = new ArrayList<>();
+        globalFormat.setCollections(entities);
+
+        for (String className : topLevelClasses) {
+            Entity entity = new Entity();
+            String superClass = getSuperClass(className);
+            entity.setName(superClass);
+            entity.setNameInDb(className);
+            entity.setUserData(true);
+            entities.add(entity);
+
+            List<List<Instance>> documents = new ArrayList<List<Instance>>();
+            List<Instance> document = new ArrayList<Instance>();
+            documents.add(document);
+            entity.setDocuments(documents);
+            mapEntitiesRecursively(className, document);
+            List<String> properties = getPropertiesWithDomain(className);
+            for (String entity2 : properties) {
+                System.out.println(entity2);
+
+            }
+
+        }
+
+        return globalFormat;
+    }
+
+    private void mapEntitiesRecursively(String className, List<Instance> documents) throws Exception {
+        List<String> properties = getPropertiesWithDomain(className);
+        for (String property : properties) {
+            Instance instance = new Instance();
+            List<String> rangeClasses = getRangeClasses(property);
+            String parentProperty = getSuperProperty(property);
+            System.out.println("parentProperty: " + parentProperty);
+            System.out.println("property: " + property);
+            if (rangeClasses.size() < 1 || rangeClasses.get(0).equals("UserDataReference")) {
+                instance.setField(parentProperty);
+                instance.setDbField(property);
+
+                String propertyChain = getPropertyFromPropertyChainAxiom(property);
+                if (propertyChain != null) {
+                    String propertyChainDomain = getDomainClasses(propertyChain).get(0);
+                    instance.setReference(true);
+                    instance.setReferenceClass(propertyChainDomain);
+                    instance.setReferenceProperty(propertyChain);
+
+                }
+            } else {
+                String rangeClass = rangeClasses.get(0);
+                System.out.println("asdfasdf" + "sdf " + rangeClass);
+                instance.setField(parentProperty);
+                instance.setRange(rangeClass);
+                instance.setObjectProperty(true);
+                List<Instance> fields = new ArrayList<Instance>();
+                instance.setFields(fields);
+                mapEntitiesRecursively(rangeClass, fields);
+            }
+            documents.add(instance);
+        }
+
+    }
+
+    public List<String> getPropertiesWithDomain(String className) {
+        // Get the class
+        OWLClass owlClass = manager.getOWLDataFactory()
+                .getOWLClass(IRI.create(prefix + className));
+
+        // Get all properties with the class in their domain
+        return ontology.getObjectPropertiesInSignature()
+                .stream()
+                .filter(property -> ontology.getObjectPropertyDomainAxioms(property)
+                        .stream()
+                        .anyMatch(axiom -> {
+                            if (axiom.getDomain().equals(owlClass)) {
+                                return true;
+                            } else if (axiom.getDomain() instanceof OWLObjectUnionOf) {
+                                OWLObjectUnionOf union = (OWLObjectUnionOf) axiom.getDomain();
+                                return union.getOperands().contains(owlClass);
+                            }
+                            return false;
+                        }))
+                .map(property -> property.getIRI().getFragment())
+                .collect(Collectors.toList());
+    }
+
 }

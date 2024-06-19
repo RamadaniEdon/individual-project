@@ -14,19 +14,19 @@ public class DatabaseService {
     this.repository = repository;
   }
 
-  public List<DatabaseModel> getAllUsers() {
+  public List<DatabaseModel> getAllDatabases() {
     return repository.findAll();
   }
 
-  public DatabaseModel addUser(DatabaseModel database) {
+  public DatabaseModel addDatabase(DatabaseModel database) {
     return repository.save(database);
   }
 
-  public DatabaseModel findUserById(String id) {
+  public DatabaseModel findDatabaseById(String id) {
     return repository.findById(id).orElse(null);
   }
 
-  public void deleteUserById(String id) {
+  public void deleteDatabaseById(String id) {
     Optional<DatabaseModel> userOptional = repository.findById(id);
     if (userOptional.isPresent()) {
       repository.deleteById(id);
