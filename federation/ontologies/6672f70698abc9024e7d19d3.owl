@@ -5,9 +5,12 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:schema="https://schema.org/"
+     xmlns:ontology="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#"
+     xmlns:categories="http://localhost:8081/ontologies/categories#">
     <Ontology>
-        <!-- <imports rdf:resource="http://localhost:8081/ontologies/categories"/> -->
         <imports rdf:resource="https://raw.githubusercontent.com/schemaorg/schemaorg/main/data/releases/26.0/schemaorg.owl"/>
     </Ontology>
     
@@ -22,6 +25,32 @@
      -->
 
 
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2 -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2">
+        <rdfs:domain rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/0d0803d7-328d-44e7-a1be-643306973768"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/01b7abb0-86b4-4cb4-8622-4e87def33ae6"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/9588945e-6a70-47c0-8d87-dfe4d66d1193"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/a8a7fe8e-ea7a-4196-8f66-e29d69083714"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/151f55d7-1df1-4e3b-8671-0595be9e502e"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/6dd88574-3200-4aa8-9c9e-6eb7e29712b0"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference">
+        <rdfs:domain rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference/b114d7b1-e839-45c1-9e03-4dba3a46e8e7"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference/0eec041c-60d6-4c7b-88cd-b3ea69bdd25e"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/e6fd544b-f89e-4892-bf6c-69199bc59b60"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/114585bf-3e28-4993-ae84-c868abd94e5a"/>
+    </ObjectProperty>
     
 
 
@@ -401,6 +430,20 @@
     
 
 
+    <!-- http://localhost:8081/ontologies/categories#accessControl -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/ontologies/categories#accessControl">
+        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/a8a7fe8e-ea7a-4196-8f66-e29d69083714"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/e6fd544b-f89e-4892-bf6c-69199bc59b60"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/114585bf-3e28-4993-ae84-c868abd94e5a"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/151f55d7-1df1-4e3b-8671-0595be9e502e"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/6dd88574-3200-4aa8-9c9e-6eb7e29712b0"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#12345678.private"/>
+    </ObjectProperty>
+    
+
+
     <!-- https://schema.org/address -->
 
 
@@ -481,6 +524,32 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#userDataEntityOrigin -->
+
+
+    <DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#userDataEntityOrigin"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#userDataIdentifier -->
+
+
+    <DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#userDataIdentifier"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -505,6 +574,13 @@
     <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2">
         <rdfs:subClassOf rdf:resource="https://schema.org/PostalAddress"/>
     </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference"/>
     
 
 
@@ -544,10 +620,107 @@
     
 
 
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/0d0803d7-328d-44e7-a1be-643306973768 -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/0d0803d7-328d-44e7-a1be-643306973768">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/01b7abb0-86b4-4cb4-8622-4e87def33ae6 -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/01b7abb0-86b4-4cb4-8622-4e87def33ae6">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/9588945e-6a70-47c0-8d87-dfe4d66d1193 -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/9588945e-6a70-47c0-8d87-dfe4d66d1193">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference/b114d7b1-e839-45c1-9e03-4dba3a46e8e7 -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference/b114d7b1-e839-45c1-9e03-4dba3a46e8e7">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference/0eec041c-60d6-4c7b-88cd-b3ea69bdd25e -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference/0eec041c-60d6-4c7b-88cd-b3ea69bdd25e">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#UserDataReference"/>
+    </Class>
+    
+
+
     <!-- http://localhost:8081/ontologies/categories#UserDataReference -->
 
 
     <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#12345678.private -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#12345678.private"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/a8a7fe8e-ea7a-4196-8f66-e29d69083714 -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/a8a7fe8e-ea7a-4196-8f66-e29d69083714">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/e6fd544b-f89e-4892-bf6c-69199bc59b60 -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/e6fd544b-f89e-4892-bf6c-69199bc59b60">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/114585bf-3e28-4993-ae84-c868abd94e5a -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/114585bf-3e28-4993-ae84-c868abd94e5a">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/151f55d7-1df1-4e3b-8671-0595be9e502e -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/151f55d7-1df1-4e3b-8671-0595be9e502e">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/6dd88574-3200-4aa8-9c9e-6eb7e29712b0 -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/6dd88574-3200-4aa8-9c9e-6eb7e29712b0">
+        <rdfs:subClassOf rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    </Class>
     
 
 
@@ -590,8 +763,51 @@
 
 
     <Class rdf:about="https://schema.org/Product"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/0ec55811-5186-4a3b-b6d5-5053d8d3a51b -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2/0ec55811-5186-4a3b-b6d5-5053d8d3a51b">
+        <rdf:type rdf:resource="http://localhost:8081/databases/6672f70698abc9024e7d19d3/ontology#PostalAddress-2"/>
+        <ontology:users.country rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/3dd0ae32-27f1-4f42-a2c2-9547711a02b1"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#12345678.private -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.private"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/3dd0ae32-27f1-4f42-a2c2-9547711a02b1 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/3dd0ae32-27f1-4f42-a2c2-9547711a02b1">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#12345678.private"/>
+        <categories:userDataEntityOrigin>users</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
 </rdf:RDF>
 
 
 
 <!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

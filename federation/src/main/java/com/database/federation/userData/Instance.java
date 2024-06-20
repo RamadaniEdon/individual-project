@@ -12,6 +12,7 @@ public class Instance {
     private String range;
     private String referenceClass;
     private String referenceProperty;
+    private String categoryName;
     private List<Instance> fields;
     
     public String getField() {
@@ -67,6 +68,12 @@ public class Instance {
     }
     public void setReferenceProperty(String referenceProperty) {
         this.referenceProperty = referenceProperty;
+    }
+    public String getCategoryName() {
+        return categoryName;
+    }
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
     public List<Instance> getFields() {
         return fields;

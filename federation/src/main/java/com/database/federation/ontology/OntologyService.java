@@ -10,6 +10,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
 import com.database.federation.database.DatabaseModel;
+import com.database.federation.userData.CategoryForData;
+import com.database.federation.userData.Entity;
+import com.database.federation.userData.Instance;
 import com.database.federation.userData.UserDataGlobalFormat;
 import com.database.federation.utils.CategoryJson;
 import com.database.federation.utils.Collection;
@@ -43,24 +46,19 @@ public class OntologyService {
   }
 
   public void mapDatabaseToOntology(DatabaseForm form) throws Exception {
-    // This method will map the database form to the ontology
-    // Create OWLOntologyManager
-
-    // OWLOntology schemaOrgOntology =
-    // manager.loadOntologyFromOntologyDocument(IRI.create(SCHEMA_ORG_URI));
-
-    // Create an empty ontology
     Ontology ontology = new Ontology(getNewOntologyPrefix(form.getId()), form.getId() + ".owl", true);
     indirections = 0;
+
     // Add import declaration to the ontology
-    OWLImportsDeclaration importSchemaDeclaration = manager.getOWLDataFactory()
-        .getOWLImportsDeclaration(IRI.create(SCHEMA_ORG_URI));
+    // OWLImportsDeclaration importSchemaDeclaration = manager.getOWLDataFactory()
+    // .getOWLImportsDeclaration(IRI.create(SCHEMA_ORG_URI));
 
-    OWLImportsDeclaration importCategoriesDeclaration = manager.getOWLDataFactory()
-        .getOWLImportsDeclaration(IRI.create(CATEGORY_ONTOLOGY_URL));
+    // OWLImportsDeclaration importCategoriesDeclaration =
+    // manager.getOWLDataFactory()
+    // .getOWLImportsDeclaration(IRI.create(CATEGORY_ONTOLOGY_URL));
 
-    ontology.addImportDeclaration(importSchemaDeclaration);
-    ontology.addImportDeclaration(importCategoriesDeclaration);
+    // ontology.addImportDeclaration(importSchemaDeclaration);
+    // ontology.addImportDeclaration(importCategoriesDeclaration);
 
     for (Collection c : form.getCollections()) {
       ontology.addSubClass(c.getCollectionName(), c.getMeaning(), schemaOrgOntology);
@@ -77,11 +75,11 @@ public class OntologyService {
     ontology.createOntologyFile();
   }
 
-  private void mapFieldAgain(Ontology ont, Field f, String parent, String collectionName) throws Exception {
+  private void mapFieldAgain(Ontology ont, Field f, String parent, String prefix) throws Exception {
     indirections++;
     if (f.getFieldType() == FieldType.FOREIGN) {
 
-      String propertyName = collectionName + "." + f.getName();
+      String propertyName = prefix + "." + f.getName();
       String foreignFieldName = f.getRangeClass() + "." + f.getForeignKey();
 
       ont.addRelatedObjectProperties(
@@ -91,27 +89,57 @@ public class OntologyService {
           null);
     } else if (f.getFieldType() == FieldType.OBJECT_PROPERTY) {
 
-      String tempClassName = f.getRangeClass() + "-" + indirections;
-      String tempPropertyName = f.getName() + "-" + indirections;
-      String rangeClass = ont.prefix + f.getRangeClass() + "-" + indirections;
+      if (f.getMeaning() != null && !f.getMeaning().isEmpty()) {
+        String propertyName = prefix + "." + f.getName();
+        String tempClassName = f.getRangeClass() + "-" + indirections;
+        String rangeClass = ont.prefix + f.getRangeClass() + "-" + indirections;
 
-      ont.addSubClass(
-          tempClassName,
-          f.getRangeClass(),
-          schemaOrgOntology);
-      ont.addSubObjectProperty(
-          tempPropertyName,
-          f.getName(),
-          schemaOrgOntology,
-          new ArrayList<>(Arrays.asList(parent)),
-          new ArrayList<>(Arrays.asList(rangeClass)));
+        schemaOrgOntology.isObjectProperty(f.getMeaning());
 
-      for (Field field : f.getFields()) {
-        mapFieldAgain(ont, field, rangeClass, collectionName);
+        String userDataReference = categoriesOntology.prefix + "UserDataReference";
+
+        ont.addSubClass(
+            tempClassName,
+            f.getRangeClass(),
+            schemaOrgOntology);
+
+        ont.addSubObjectProperty(
+            propertyName,
+            f.getMeaning(),
+            schemaOrgOntology,
+            new ArrayList<>(Arrays.asList(parent)),
+            new ArrayList<>(Arrays.asList(rangeClass, userDataReference)));
+
+        for (Field field : f.getFields()) {
+          mapFieldAgain(ont, field, rangeClass, prefix+"."+f.getName());
+        }
+
+      } else {
+
+        String tempClassName = f.getRangeClass() + "-" + indirections;
+        String tempPropertyName = f.getName() + "-" + indirections;
+        String rangeClass = ont.prefix + f.getRangeClass() + "-" + indirections;
+
+        ont.addSubClass(
+            tempClassName,
+            f.getRangeClass(),
+            schemaOrgOntology);
+
+        ont.addSubObjectProperty(
+            tempPropertyName,
+            f.getName(),
+            schemaOrgOntology,
+            new ArrayList<>(Arrays.asList(parent)),
+            new ArrayList<>(Arrays.asList(rangeClass)));
+
+        for (Field field : f.getFields()) {
+          mapFieldAgain(ont, field, rangeClass, prefix);
+        }
       }
+
     } else {
 
-      String propertyName = collectionName + "." + f.getName();
+      String propertyName = prefix + "." + f.getName();
 
       schemaOrgOntology.isObjectProperty(f.getMeaning());
 
@@ -123,12 +151,12 @@ public class OntologyService {
           schemaOrgOntology,
           new ArrayList<>(Arrays.asList(parent)),
           new ArrayList<>(Arrays.asList(rangeClass)));
-          // 
+      //
       // ont.addSubDataProperty(
-          // propertyName,
-          // f.getMeaning(),
-          // schemaOrgOntology,
-          // new ArrayList<>(Arrays.asList(parent)));
+      // propertyName,
+      // f.getMeaning(),
+      // schemaOrgOntology,
+      // new ArrayList<>(Arrays.asList(parent)));
     }
   }
 
@@ -316,6 +344,146 @@ public class OntologyService {
     UserDataGlobalFormat result = new UserDataGlobalFormat();
 
     return null;
+
   }
 
+  public void changeAccessControlOfData(CategoryForData dataCategory, String dbId, String userAfm) throws Exception {
+
+    Ontology dbOnt = new Ontology(getNewOntologyPrefix(dbId), dbId + ".owl", false);
+
+    List<String> propertyDomains = dbOnt
+        .getDomainClasses(dataCategory.getCollection() + "." + dataCategory.getProperty());
+    String propertyDomain = propertyDomains.get(0);
+    System.out.println(propertyDomain + " :: Edon Ramadani");
+
+    List<IRI> dataReferencesInRange = dbOnt
+        .getIndividualsInRangeOfObjectProperty(dataCategory.getCollection() + "." + dataCategory.getProperty());
+
+    for (IRI iri : dataReferencesInRange) {
+      System.out.println(iri + " :: Edon Ramadani nga gjilani");
+    }
+
+    List<IRI> dataReferencesWithTheGivenId = dbOnt.getInstancesWithPropertyValueFromListWithoutPrefix(
+        dataReferencesInRange, categoriesOntology.prefix + "userDataIdentifier", dataCategory.getIdentifier());
+    System.out.println("ASDFAASDFSADF");
+    for (IRI iri : dataReferencesWithTheGivenId) {
+      System.out.println(iri + " :: Edon Ramadani");
+    }
+
+    if (dataReferencesWithTheGivenId.size() == 0) {
+      System.out.println("Data reference with the given identifier does not exist");
+      // return;
+    }
+
+    IRI dataReference;
+
+    if (dataReferencesWithTheGivenId.size() == 0) {
+      dataReference = dbOnt.createInstanceOfClassWithoutPrefix(
+          this.categoriesOntology.prefix + "UserDataReference");
+
+      dbOnt.addPropertyValueToInstanceWithoutPrefix(
+          dataReference,
+          categoriesOntology.prefix + "userDataEntityOrigin",
+          dataCategory.getCollection());
+
+      dbOnt.addPropertyValueToInstanceWithoutPrefix(
+          dataReference,
+          categoriesOntology.prefix + "userDataIdentifier",
+          dataCategory.getIdentifier());
+
+      IRI newDomainClass = dbOnt.createInstanceOfClass(propertyDomain);
+
+      IRI domainDataProperty = dbOnt.createObjectPropertyAndLink(
+          dataCategory.getCollection() + "." + dataCategory.getProperty(), newDomainClass, dataReference);
+    } else {
+      dataReference = dataReferencesWithTheGivenId.get(0);
+      dbOnt.removeAxiomsWithIndividualInDomainWithoutPrefix(dataReference, categoriesOntology.prefix + "accessControl");
+    }
+
+    IRI accessControlCategory = categoriesOntology.getInstanceOfClassWithPropertyValue(
+        "AccessControlCategory",
+        "categoryName",
+        dataCategory.getCategoryName());
+
+    IRI dataAccessProperty = dbOnt.createObjectPropertyAndLinkWithoutPrefix(
+        categoriesOntology.prefix + "accessControl",
+        dataReference,
+        accessControlCategory);
+
+    dbOnt.createOntologyFile();
+  }
+
+  public void respectAccessControl(UserDataGlobalFormat userData, String dbId) throws Exception {
+    Ontology dbOnt = new Ontology(getNewOntologyPrefix(dbId), dbId + ".owl", false);
+    List<IRI> dataReferences = dbOnt
+        .getIndividualsOfClassWithoutPrefix(categoriesOntology.prefix + "UserDataReference");
+
+    for (IRI dataReference : dataReferences) {
+      String idValue = dbOnt.getPropertyValueForIndividualWithoutPrefix(dataReference,
+          categoriesOntology.prefix + "userDataIdentifier");
+      String dbReference = dbOnt.getObjectPropertyWithIndividualInRange(dataReference);
+      String dbCollection = dbReference.split("\\.")[0];
+      IRI accessControlCategory = dbOnt.getRangeIndividualOfObjectPropertyWithoutPrefix(dataReference,
+          categoriesOntology.prefix + "accessControl");
+      String categoryName = categoriesOntology.getPropertyValueForIndividual(accessControlCategory, "categoryName");
+
+      Entity entity = null;
+      for (Entity e : userData.getCollections()) {
+        if (e.getNameInDb().equals(dbCollection)) {
+          entity = e;
+          break;
+        }
+      }
+      if (entity == null) {
+        return;
+      }
+
+      for (List<Instance> documents : entity.getDocuments()) {
+        Instance idInstance = getInstanceRepresentingProperty(documents, "identifier");
+        if (idInstance.getValue() != null && idInstance.getValue().equals(idValue)) {
+          Instance accessControlInstance = getInstanceRepresentingPropertyInDb(documents, dbReference);
+          System.out.println("Se di pse: " + dbReference);
+          System.out.println("Se di pse: " + categoryName);
+          System.out.println("Se di pse: " + categoryName);
+          System.out.println("Se di pse: " + categoryName);
+          // if(accessControlInstance == null){
+          // continue;
+          // }
+          accessControlInstance.setCategoryName(categoryName);
+        }
+      }
+
+    }
+  }
+
+  private Instance getInstanceRepresentingProperty(List<Instance> documents, String property) {
+    for (Instance instance : documents) {
+      if (instance.getField() != null && instance.getField().equals(property)) {
+        return instance;
+      }
+      if (instance.getFields() != null) {
+        Instance result = getInstanceRepresentingProperty(instance.getFields(), property);
+
+        if (result != null) {
+          return result;
+        }
+      }
+    }
+    return null;
+  }
+
+  private Instance getInstanceRepresentingPropertyInDb(List<Instance> documents, String property) {
+    for (Instance instance : documents) {
+      if (instance.getDbField() != null && instance.getDbField().equals(property)) {
+        return instance;
+      }
+      if (instance.getFields() != null) {
+        Instance result = getInstanceRepresentingPropertyInDb(instance.getFields(), property);
+        if (result != null) {
+          return result;
+        }
+      }
+    }
+    return null;
+  }
 }

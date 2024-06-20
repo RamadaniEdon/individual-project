@@ -20,13 +20,17 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
@@ -38,6 +42,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubDataPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
+import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
@@ -51,11 +56,13 @@ public class Ontology {
     public String filename;
     private OWLOntologyManager manager;
     private OWLOntology ontology;
+    OWLDataFactory factory;
 
     public Ontology(String prefix, String filename, boolean newOntology) throws Exception {
         this.prefix = prefix;
         this.filename = filename;
         manager = OWLManager.createOWLOntologyManager();
+        factory = manager.getOWLDataFactory();
 
         if (newOntology) {
             ontology = manager.createOntology();
@@ -613,7 +620,10 @@ public class Ontology {
             String parentProperty = getSuperProperty(property);
             System.out.println("parentProperty: " + parentProperty);
             System.out.println("property: " + property);
-            if (rangeClasses.size() < 1 || rangeClasses.get(0).equals("UserDataReference")) {
+            if(rangeClasses.size() > 0) System.out.println("asdfasdf" + "sdi cka leshi o vlla " + rangeClasses.get(0));
+            if(rangeClasses.size() > 1) System.out.println("asdfasdf" + "sdi cka leshi o vlla " + rangeClasses.get(1));
+            if (rangeClasses.size() < 1 || (rangeClasses.size() == 1 && rangeClasses.get(0).equals("UserDataReference"))) {
+                System.out.println(10);
                 instance.setField(parentProperty);
                 instance.setDbField(property);
 
@@ -625,11 +635,34 @@ public class Ontology {
                     instance.setReferenceProperty(propertyChain);
 
                 }
+            } else if (rangeClasses.size() > 1 && (rangeClasses.get(0).equals("UserDataReference")
+                    || rangeClasses.get(1).equals("UserDataReference"))) {
+                        System.out.println(20);
+                String rangeClass;
+                if (!rangeClasses.get(0).equals("UserDataReference")) {
+                    rangeClass = rangeClasses.get(0);
+                } else if (!rangeClasses.get(1).equals("UserDataReference")) {
+                    rangeClass = rangeClasses.get(1);
+                } else {
+                    System.out.println("asdfasdf" + "sdi cka leshi o vlla " + rangeClasses.get(0));
+                    System.out.println("asdfasdf" + "sdi cka leshi o vlla " + rangeClasses.get(1));
+                    rangeClass = null; // or some default value
+                }
+                System.out.println("asdfasdf" + "sdf sdf s d fsd fsd fsd af sd fsd f " + rangeClass);
+                instance.setField(parentProperty);
+                instance.setDbField(property);
+                instance.setRange(getSuperClass(className));
+                instance.setObjectProperty(true);
+                List<Instance> fields = new ArrayList<Instance>();
+                instance.setFields(fields);
+                mapEntitiesRecursively(rangeClass, fields);
+
             } else {
+                System.out.println(30);
                 String rangeClass = rangeClasses.get(0);
                 System.out.println("asdfasdf" + "sdf " + rangeClass);
                 instance.setField(parentProperty);
-                instance.setRange(rangeClass);
+                instance.setRange(getSuperClass(className));
                 instance.setObjectProperty(true);
                 List<Instance> fields = new ArrayList<Instance>();
                 instance.setFields(fields);
@@ -661,6 +694,352 @@ public class Ontology {
                         }))
                 .map(property -> property.getIRI().getFragment())
                 .collect(Collectors.toList());
+    }
+
+    public IRI createInstanceOfClass(String className) {
+
+        OWLNamedIndividual individual = factory
+                .getOWLNamedIndividual(IRI.create(prefix + className + "/" + java.util.UUID.randomUUID().toString()));
+        OWLClass clazz = factory.getOWLClass(IRI.create(prefix + className));
+        OWLClassAssertionAxiom personClassAssertion = factory.getOWLClassAssertionAxiom(clazz,
+                individual);
+        manager.addAxiom(this.ontology, personClassAssertion);
+
+        return individual.getIRI();
+    }
+
+    public IRI createInstanceOfClassWithoutPrefix(String className) {
+
+        OWLNamedIndividual individual = factory
+                .getOWLNamedIndividual(IRI.create(className + "/" + java.util.UUID.randomUUID().toString()));
+        OWLClass clazz = factory.getOWLClass(IRI.create(className));
+        OWLClassAssertionAxiom personClassAssertion = factory.getOWLClassAssertionAxiom(clazz,
+                individual);
+        manager.addAxiom(this.ontology, personClassAssertion);
+
+        return individual.getIRI();
+    }
+
+    public IRI createObjectPropertyAndLink(String propertyName, IRI domain, IRI range) {
+
+        OWLNamedIndividual domainIndividual = factory
+                .getOWLNamedIndividual(domain);
+
+        OWLNamedIndividual rangeIndividual = factory
+                .getOWLNamedIndividual(range);
+
+        OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(prefix + propertyName));
+        OWLObjectPropertyAssertionAxiom objectPropertyAxiom = factory
+                .getOWLObjectPropertyAssertionAxiom(
+                        property, domainIndividual, rangeIndividual);
+        manager.addAxiom(this.ontology, objectPropertyAxiom);
+
+        return property.getIRI();
+    }
+
+    public IRI createObjectPropertyAndLinkWithoutPrefix(String propertyName, IRI domain, IRI range) {
+
+        OWLNamedIndividual domainIndividual = factory
+                .getOWLNamedIndividual(domain);
+
+        OWLNamedIndividual rangeIndividual = factory
+                .getOWLNamedIndividual(range);
+
+        OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(propertyName));
+        OWLObjectPropertyAssertionAxiom objectPropertyAxiom = factory
+                .getOWLObjectPropertyAssertionAxiom(
+                        property, domainIndividual, rangeIndividual);
+        manager.addAxiom(this.ontology, objectPropertyAxiom);
+
+        return property.getIRI();
+    }
+
+    public IRI getInstanceOfClassWithPropertyValue(String className, String propertyName, String propertyValue) {
+
+        OWLClass clazz = factory.getOWLClass(IRI.create(prefix + className));
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(prefix + propertyName));
+
+        OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
+        OWLReasoner reasoner = reasonerFactory.createNonBufferingReasoner(ontology);
+
+        // Search for instances of the class
+        NodeSet<OWLNamedIndividual> instances = reasoner.getInstances(clazz, false);
+        for (OWLNamedIndividual instance : instances.getFlattened()) {
+            // Check the data property values of the instance
+            for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(instance)) {
+                if (axiom.getProperty().equals(property) && axiom.getObject().getLiteral().equals(propertyValue)) {
+                    // Found an instance with the specified property value
+                    return instance.getIRI();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void addPropertyValueToInstanceWithoutPrefix(IRI instanceIri, String propertyName, String propertyValue) {
+
+        OWLNamedIndividual instance = factory.getOWLNamedIndividual(instanceIri);
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(propertyName));
+        OWLDataPropertyAssertionAxiom axiom = factory.getOWLDataPropertyAssertionAxiom(property, instance,
+                propertyValue);
+        manager.addAxiom(ontology, axiom);
+    }
+
+    public List<IRI> getInstancesWithPropertyValue(String propertyName, String propertyValue) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(prefix + propertyName));
+
+        List<IRI> result = new ArrayList<>();
+
+        // Search through all individuals in the ontology
+        for (OWLNamedIndividual instance : ontology.getIndividualsInSignature()) {
+            // Check the data property values of the instance
+            for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(instance)) {
+                if (axiom.getProperty().equals(property) && axiom.getObject().getLiteral().equals(propertyValue)) {
+                    // Found an instance with the specified property value
+                    result.add(instance.getIRI());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<IRI> getInstancesWithPropertyValueFromList(List<IRI> instanceIris, String propertyName,
+            String propertyValue) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(prefix + propertyName));
+
+        List<IRI> result = new ArrayList<>();
+
+        // Search through the provided individuals
+        for (IRI instanceIri : instanceIris) {
+            OWLNamedIndividual instance = factory.getOWLNamedIndividual(instanceIri);
+            // Check the data property values of the instance
+            for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(instance)) {
+                if (axiom.getProperty().equals(property) && axiom.getObject().getLiteral().equals(propertyValue)) {
+                    // Found an instance with the specified property value
+                    result.add(instance.getIRI());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<IRI> getInstancesWithPropertyValueWithoutPrefix(String propertyName, String propertyValue) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(propertyName));
+
+        List<IRI> result = new ArrayList<>();
+
+        // Search through all individuals in the ontology
+        for (OWLNamedIndividual instance : ontology.getIndividualsInSignature()) {
+            // Check the data property values of the instance
+            for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(instance)) {
+                if (axiom.getProperty().equals(property) && axiom.getObject().getLiteral().equals(propertyValue)) {
+                    // Found an instance with the specified property value
+                    result.add(instance.getIRI());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<IRI> getInstancesWithPropertyValueFromListWithoutPrefix(List<IRI> instanceIris, String propertyName,
+            String propertyValue) {
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(propertyName));
+
+        List<IRI> result = new ArrayList<>();
+
+        // Search through the provided individuals
+        for (IRI instanceIri : instanceIris) {
+            OWLNamedIndividual instance = factory.getOWLNamedIndividual(instanceIri);
+            // Check the data property values of the instance
+            for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(instance)) {
+                if (axiom.getProperty().equals(property) && axiom.getObject().getLiteral().equals(propertyValue)) {
+                    // Found an instance with the specified property value
+                    result.add(instance.getIRI());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<IRI> getIndividualsInRangeOfObjectProperty(String objectPropertyName) {
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(prefix + objectPropertyName));
+
+        List<IRI> result = new ArrayList<>();
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty)) {
+                result.add(axiom.getObject().asOWLNamedIndividual().getIRI());
+            }
+        }
+
+        return result;
+    }
+
+    public List<IRI> getIndividualsInRangeOfObjectPropertyWithoutPrefix(String objectPropertyName) {
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(objectPropertyName));
+
+        List<IRI> result = new ArrayList<>();
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty)) {
+                result.add(axiom.getObject().asOWLNamedIndividual().getIRI());
+            }
+        }
+
+        return result;
+    }
+
+    public void removeAxiomsWithIndividualInDomain(IRI individualIri, String objectPropertyName) {
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(prefix + objectPropertyName));
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty) && axiom.getSubject().equals(individual)) {
+
+                ontology.removeAxiom(axiom);
+            }
+        }
+    }
+
+    public void removeAxiomsWithIndividualInDomainWithoutPrefix(IRI individualIri, String objectPropertyName) {
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(objectPropertyName));
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty) && axiom.getSubject().equals(individual)) {
+
+                ontology.removeAxiom(axiom);
+            }
+        }
+    }
+
+    public String getObjectPropertyWithIndividualInRange(IRI individualIri) {
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getObject().equals(individual)) {
+                return axiom.getProperty().asOWLObjectProperty().getIRI().getFragment();
+            }
+        }
+
+        return null;
+    }
+
+    public String getPropertyValueForIndividual(IRI individualIri, String propertyName) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(prefix + propertyName));
+
+        for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(individual)) {
+            if (axiom.getProperty().equals(property)) {
+                return axiom.getObject().getLiteral();
+            }
+        }
+
+        return null;
+    }
+
+    public String getPropertyValueForIndividualWithoutPrefix(IRI individualIri, String propertyName) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+        OWLDataProperty property = factory.getOWLDataProperty(IRI.create(propertyName));
+
+        for (OWLDataPropertyAssertionAxiom axiom : ontology.getDataPropertyAssertionAxioms(individual)) {
+            if (axiom.getProperty().equals(property)) {
+                return axiom.getObject().getLiteral();
+            }
+        }
+
+        return null;
+    }
+
+    public List<IRI> getIndividualsOfClass(String className) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLClass owlClass = factory.getOWLClass(IRI.create(prefix + className));
+
+        List<IRI> result = new ArrayList<>();
+
+        for (OWLClassAssertionAxiom axiom : ontology.getAxioms(AxiomType.CLASS_ASSERTION)) {
+            if (axiom.getClassExpression().equals(owlClass)) {
+                result.add(axiom.getIndividual().asOWLNamedIndividual().getIRI());
+            }
+        }
+
+        return result;
+    }
+
+    public List<IRI> getIndividualsOfClassWithoutPrefix(String className) {
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        OWLClass owlClass = factory.getOWLClass(IRI.create(className));
+
+        List<IRI> result = new ArrayList<>();
+
+        for (OWLClassAssertionAxiom axiom : ontology.getAxioms(AxiomType.CLASS_ASSERTION)) {
+            if (axiom.getClassExpression().equals(owlClass)) {
+                result.add(axiom.getIndividual().asOWLNamedIndividual().getIRI());
+            }
+        }
+
+        return result;
+    }
+
+    public IRI getRangeIndividualOfObjectProperty(IRI individualIri, String objectPropertyName) {
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(prefix + objectPropertyName));
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty) && axiom.getSubject().equals(individual)) {
+                return axiom.getObject().asOWLNamedIndividual().getIRI();
+            }
+        }
+
+        return null;
+    }
+
+    public IRI getRangeIndividualOfObjectPropertyWithoutPrefix(IRI individualIri, String objectPropertyName) {
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(objectPropertyName));
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty) && axiom.getSubject().equals(individual)) {
+                return axiom.getObject().asOWLNamedIndividual().getIRI();
+            }
+        }
+
+        return null;
+    }
+
+    public IRI getDomainIndividualOfObjectProperty(IRI individualIri, String objectPropertyName) {
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(prefix + objectPropertyName));
+
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty) && axiom.getObject().equals(individual)) {
+                return axiom.getSubject().asOWLNamedIndividual().getIRI();
+            }
+        }
+
+        return null;
+    }
+
+    public IRI getDomainIndividualOfObjectPropertyWithoutPrefix(IRI individualIri, String objectPropertyName) {
+        OWLNamedIndividual individual = factory.getOWLNamedIndividual(individualIri);
+        OWLObjectProperty objectProperty = factory.getOWLObjectProperty(IRI.create(objectPropertyName));
+        for (OWLObjectPropertyAssertionAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+            if (axiom.getProperty().equals(objectProperty) && axiom.getObject().equals(individual)) {
+                return axiom.getSubject().asOWLNamedIndividual().getIRI();
+            }
+        }
+
+        return null;
     }
 
 }
