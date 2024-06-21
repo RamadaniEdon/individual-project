@@ -667,12 +667,32 @@
     
 
 
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems/f912b1d0-0267-4973-b201-35677db6b279 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems/f912b1d0-0267-4973-b201-35677db6b279">
+        <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
+        <ontology:orderItems.orderId rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/3ef7582e-b29d-4c63-8a7a-773a93f5e920"/>
+    </NamedIndividual>
+    
+
+
     <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems/4bed2629-2e60-4c1c-b43d-f1c87da5a72c -->
 
 
     <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems/4bed2629-2e60-4c1c-b43d-f1c87da5a72c">
         <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
         <ontology:orderItems.itemId rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/76bee07c-2293-4efd-a8a9-e9f0d8bec114"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/ca06ca88-0ccc-4235-a007-cd1bcfc13a0c -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/ca06ca88-0ccc-4235-a007-cd1bcfc13a0c">
+        <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+        <ontology:orders.userId rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/9a91169f-2bd6-4646-b413-c4666f9bed50"/>
     </NamedIndividual>
     
 
@@ -707,6 +727,13 @@
     
 
 
+    <!-- http://localhost:8081/ontologies/categories#123456789.not-so-private -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789.not-so-private"/>
+    
+
+
     <!-- http://localhost:8081/ontologies/categories#123456789.private -->
 
 
@@ -733,6 +760,18 @@
     
 
 
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/3ef7582e-b29d-4c63-8a7a-773a93f5e920 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/3ef7582e-b29d-4c63-8a7a-773a93f5e920">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.not-so-private"/>
+        <categories:userDataEntityOrigin>orderItems</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
+    
+
+
     <!-- http://localhost:8081/ontologies/categories#UserDataReference/63198be8-4583-49f3-a269-91bd3b9e6664 -->
 
 
@@ -753,6 +792,18 @@
         <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.very-private"/>
         <categories:userDataEntityOrigin>orderItems</categories:userDataEntityOrigin>
         <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/9a91169f-2bd6-4646-b413-c4666f9bed50 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/9a91169f-2bd6-4646-b413-c4666f9bed50">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.very-private"/>
+        <categories:userDataEntityOrigin>orders</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>4</categories:userDataIdentifier>
     </NamedIndividual>
     
 
