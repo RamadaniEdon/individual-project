@@ -2,6 +2,7 @@ package com.database.federation.database;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,6 @@ public class DatabaseController {
   @PostMapping
   public ResponseEntity<String> addDocument(@RequestBody DatabaseForm databaseForm) {
     try {
-      databaseForm.setUrl(databaseForm.getUrl()+"/");
       DatabaseModel database = new DatabaseModel(databaseForm);
       database = databaseService.addDatabase(database);
 
@@ -51,6 +51,11 @@ public class DatabaseController {
     } catch (Exception e) {
       return new ResponseEntity<>("Failed to add document: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @GetMapping
+  public ResponseEntity<List<DatabaseModel>> getAllDatabases(){
+    return new ResponseEntity<>(databaseService.getAllDatabases(), HttpStatus.OK);
   }
 
   @GetMapping("/{id}/ontology")

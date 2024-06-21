@@ -3,11 +3,23 @@ package com.database.federation.dbConnector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+
 import com.database.federation.userData.Entity;
 import com.database.federation.userData.Instance;
 import com.database.federation.userData.UserDataGlobalFormat;
 
 public class DbService {
+
+    public Entity getEntityHoldingTaxID(UserDataGlobalFormat format) {
+        for (Entity entity : format.getCollections()) {
+            Instance identifier = getInstanceByName(entity, "taxID", 0);
+            if(identifier != null){
+                return entity;
+            }
+        }
+        return null;
+    }
 
     public Entity getPersonEntity(UserDataGlobalFormat format) {
         for (Entity entity : format.getCollections()) {
@@ -53,6 +65,36 @@ public class DbService {
     }
 
     private Instance getInstanceRecursively(Instance inst, String fieldName) {
+        if (inst.getFields() == null) {
+            return null;
+        }
+        for (Instance field : inst.getFields()) {
+            if (field.getDbField() != null && field.getDbField().equals(fieldName)) {
+                return field;
+            }
+            Instance newInst = getInstanceRecursively(field, fieldName);
+            if (newInst != null) {
+                return newInst;
+            }
+        }
+        return null;
+    }
+
+    public Instance getInstanceByName(Entity entity, String field, int docNum) {
+        List<Instance> document = entity.getDocuments().get(docNum);
+        for (Instance instance : document) {
+            if (instance.getField() != null && instance.getField().equals(field)) {
+                return instance;
+            }
+            Instance inst = getInstanceByNameRecursively(instance, field);
+            if (inst != null) {
+                return inst;
+            }
+        }
+        return null;
+    }
+
+    private Instance getInstanceByNameRecursively(Instance inst, String fieldName) {
         if (inst.getFields() == null) {
             return null;
         }

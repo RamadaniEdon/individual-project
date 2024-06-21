@@ -1,66 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
-import { Card, CardBody, CardHeader, Heading, Flex, Text, Button } from "@chakra-ui/react";
-import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Input,
-  Select,
-  Box,
-} from '@chakra-ui/react'
+import React, { useEffect, useState, useContext } from 'react';
+import { Menu, MenuButton, MenuList, MenuItem, Button, useToast } from "@chakra-ui/react";
+import { AuthContext } from '../../context/AuthContext';
+import { getUserCategories, changeCategoryForData } from '../../services/api';
 
+const UserCell = ({ data, userData, rowId, database, collection }) => {
+  const {token} = useContext(AuthContext)
+  const [selectedOption, setSelectedOption] = useState(data.categoryName || 'Public');
+  const [categories, setCategories] = useState([]);
+  const toast = useToast();
 
+  useEffect(() => {
+    // fetch categories from server
+    getUserCategories(token).then((categories) => {
+      setCategories(categories);
+    });
+  }, [token]);
 
-const UserCell = ({ data }) => {
-  
-
-
+  const updateCategoryForData = (categoryName) => {
+    changeCategoryForData(token, collection.nameInDb, rowId, data.dbField, categoryName, database.databaseId).then(() => {
+      setSelectedOption(categoryName);
+      toast({
+        title: "Category changed.",
+        description: `The category has been changed to ${categoryName}.`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }).catch(() => {
+      toast({
+        title: "An error occurred.",
+        description: "The category could not be changed.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    });
+  }
 
   return (
-    <Box m={3} className="UserCell">
-      <h1>{data.companyName}</h1>
-      <Table variant="striped" colorScheme="teadal">
-            <Thead>
-              <Tr>
-                <Th>Column 1</Th>
-                <Th>Column 2</Th>
-                <Th>Column 3</Th>
-                <Th>Column 4</Th>
-                <Th>Column 5</Th>
-                <Th>Column 6</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td rowSpan={3}>Cell 1</Td>
-                <Td colSpan={3}>Cell 2</Td>
-                {/* <Td>Cell 3</Td> */}
-                {/* <Td>Cell 4</Td> */}
-                <Td>Cell 5</Td>
-                <Td>Cell 6</Td>
-              </Tr>
-              <Tr>
-                <Td>Cell 1</Td>
-                <Td rowSpan={2}>Cell 2</Td>
-                <Td>Cell 3</Td>
-                <Td>Cell 4</Td>
-                <Td>Cell 5</Td>
-                {/* <Td>Cell 6</Td> */}
-              </Tr>
-              <Tr>
-                <Td>Cell 1</Td>
-                <Td>Cell 2</Td>
-                <Td>Cell 3</Td>
-                <Td>Cell 4</Td>
-                {/* <Td>Cell 5</Td> */}
-                {/* <Td>Cell 6</Td> */}
-              </Tr>
-            </Tbody>
-          </Table>
-    </Box>
+    <div className="column dataValue">
+      <p>{data.value}</p>
+      {userData && <Menu>
+        <MenuButton as={Button}>
+          {selectedOption}
+        </MenuButton>
+        <MenuList>
+          {categories.map((category) => <MenuItem onClick={() => updateCategoryForData(category.categoryName)}>{category.categoryName}</MenuItem>)}
+        </MenuList>
+      </Menu>}
+    </div>
   );
-}
+};
 
 export default UserCell;

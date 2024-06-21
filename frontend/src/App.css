@@ -106,9 +106,13 @@ p {
 
 .dataValue {
   border: 1px solid;
+  
 }
 .dataValue > p {
   border: none;
+  overflow-wrap: anywhere !important;
+  height: 4rem;
+  width: 10rem;
 }
 .dataValue > button {
   width: 80%;

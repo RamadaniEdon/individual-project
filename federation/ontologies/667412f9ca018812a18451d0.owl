@@ -1,0 +1,775 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontology="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#"
+     xmlns:categories="http://localhost:8081/ontologies/categories#">
+    <Ontology/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#address-3 -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#address-3">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/address"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#PostalAddress-3"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.description -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.description">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/description"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.id -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.id">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/identifier"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.price -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.price">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/price"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#Offer-17"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#offers-17 -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#offers-17">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/offers"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#Offer-17"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.count -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.count">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/orderQuantity"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.id -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.id">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/identifier"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.itemId -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.itemId">
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items.id"/>
+        </propertyChainAxiom>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.orderId -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems.orderId">
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.id"/>
+        </propertyChainAxiom>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.createdAt -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.createdAt">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/orderDate"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.id -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.id">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/identifier"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.userId -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders.userId">
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.id"/>
+        </propertyChainAxiom>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.afm -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.afm">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/taxID"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.country -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.country">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/addressCountry"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#PostalAddress-3"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.id -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.id">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/identifier"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.name -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.name">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/givenName"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.postalcode -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.postalcode">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/postalCode"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#PostalAddress-3"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.surname -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users.surname">
+        <rdfs:subPropertyOf rdf:resource="https://schema.org/familyName"/>
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#accessControl -->
+
+
+    <ObjectProperty rdf:about="http://localhost:8081/ontologies/categories#accessControl"/>
+    
+
+
+    <!-- https://schema.org/address -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/address"/>
+    
+
+
+    <!-- https://schema.org/addressCountry -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/addressCountry"/>
+    
+
+
+    <!-- https://schema.org/description -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/description"/>
+    
+
+
+    <!-- https://schema.org/familyName -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/familyName"/>
+    
+
+
+    <!-- https://schema.org/givenName -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/givenName"/>
+    
+
+
+    <!-- https://schema.org/identifier -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/identifier"/>
+    
+
+
+    <!-- https://schema.org/offers -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/offers"/>
+    
+
+
+    <!-- https://schema.org/orderDate -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/orderDate"/>
+    
+
+
+    <!-- https://schema.org/orderQuantity -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/orderQuantity"/>
+    
+
+
+    <!-- https://schema.org/postalCode -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/postalCode"/>
+    
+
+
+    <!-- https://schema.org/price -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/price"/>
+    
+
+
+    <!-- https://schema.org/taxID -->
+
+
+    <ObjectProperty rdf:about="https://schema.org/taxID"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#userDataEntityOrigin -->
+
+
+    <DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#userDataEntityOrigin"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#userDataIdentifier -->
+
+
+    <DatatypeProperty rdf:about="http://localhost:8081/ontologies/categories#userDataIdentifier"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#Offer-17 -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#Offer-17">
+        <rdfs:subClassOf rdf:resource="https://schema.org/Offer"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#PostalAddress-3 -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#PostalAddress-3">
+        <rdfs:subClassOf rdf:resource="https://schema.org/PostalAddress"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#items">
+        <rdfs:subClassOf rdf:resource="https://schema.org/Product"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems">
+        <rdfs:subClassOf rdf:resource="https://schema.org/OrderItem"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders">
+        <rdfs:subClassOf rdf:resource="https://schema.org/Order"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users -->
+
+
+    <Class rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#users">
+        <rdfs:subClassOf rdf:resource="https://schema.org/Person"/>
+    </Class>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference -->
+
+
+    <Class rdf:about="http://localhost:8081/ontologies/categories#UserDataReference"/>
+    
+
+
+    <!-- https://schema.org/Offer -->
+
+
+    <Class rdf:about="https://schema.org/Offer"/>
+    
+
+
+    <!-- https://schema.org/Order -->
+
+
+    <Class rdf:about="https://schema.org/Order"/>
+    
+
+
+    <!-- https://schema.org/OrderItem -->
+
+
+    <Class rdf:about="https://schema.org/OrderItem"/>
+    
+
+
+    <!-- https://schema.org/Person -->
+
+
+    <Class rdf:about="https://schema.org/Person"/>
+    
+
+
+    <!-- https://schema.org/PostalAddress -->
+
+
+    <Class rdf:about="https://schema.org/PostalAddress"/>
+    
+
+
+    <!-- https://schema.org/Product -->
+
+
+    <Class rdf:about="https://schema.org/Product"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems/4bed2629-2e60-4c1c-b43d-f1c87da5a72c -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems/4bed2629-2e60-4c1c-b43d-f1c87da5a72c">
+        <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orderItems"/>
+        <ontology:orderItems.itemId rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/76bee07c-2293-4efd-a8a9-e9f0d8bec114"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/05fe178e-8213-49dc-a829-f252c9f031da -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/05fe178e-8213-49dc-a829-f252c9f031da">
+        <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+        <ontology:orders.id rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/63198be8-4583-49f3-a269-91bd3b9e6664"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/483a78f5-cdac-4181-89c6-9eaf6872d7f6 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/483a78f5-cdac-4181-89c6-9eaf6872d7f6">
+        <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+        <ontology:orders.createdAt rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/b423067f-b258-4ba8-a1e6-db29442dbf51"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/5f26d35c-9fa7-4f84-a44c-703625b24034 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders/5f26d35c-9fa7-4f84-a44c-703625b24034">
+        <rdf:type rdf:resource="http://localhost:8081/databases/667412f9ca018812a18451d0/ontology#orders"/>
+        <ontology:orders.userId rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference/94ef0f29-6836-464c-95f8-58b59461fb38"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#123456789.private -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789.private"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#123456789.very-private -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789.very-private"/>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/b423067f-b258-4ba8-a1e6-db29442dbf51 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/b423067f-b258-4ba8-a1e6-db29442dbf51">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.private"/>
+        <categories:userDataEntityOrigin>orders</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/63198be8-4583-49f3-a269-91bd3b9e6664 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/63198be8-4583-49f3-a269-91bd3b9e6664">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.very-private"/>
+        <categories:userDataEntityOrigin>orders</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/76bee07c-2293-4efd-a8a9-e9f0d8bec114 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/76bee07c-2293-4efd-a8a9-e9f0d8bec114">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.very-private"/>
+        <categories:userDataEntityOrigin>orderItems</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
+    
+
+
+    <!-- http://localhost:8081/ontologies/categories#UserDataReference/94ef0f29-6836-464c-95f8-58b59461fb38 -->
+
+
+    <NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#UserDataReference/94ef0f29-6836-464c-95f8-58b59461fb38">
+        <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <categories:accessControl rdf:resource="http://localhost:8081/ontologies/categories#123456789.very-private"/>
+        <categories:userDataEntityOrigin>orders</categories:userDataEntityOrigin>
+        <categories:userDataIdentifier>1</categories:userDataIdentifier>
+    </NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

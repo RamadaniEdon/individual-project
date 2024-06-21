@@ -114,17 +114,20 @@ public class MongoService extends DbService {
         }
     }
 
-    public void mapDatabaseToGlobalFormat(UserDataGlobalFormat dataFormat) throws Exception {
+    public void mapDatabaseToGlobalFormat(UserDataGlobalFormat dataFormat, String userTaxId) throws Exception {
         for (Entity e : dataFormat.getCollections()) {
             e.setUserData(false);
         }
-        String afm = "123456789";
+        String afm = userTaxId;
 
-        Entity personEntity = getPersonEntity(dataFormat);
+        Entity personEntity = getEntityHoldingTaxID(dataFormat);
         personEntity.setUserData(true);
-        Instance taxIDInstance = getTaxIDInstance(personEntity);
+        Instance taxIDInstance = getInstanceByName(personEntity, "taxID", 0);
 
-        MongoCursor<Document> res = getDocumentsInCollectingByFieldValue(personEntity.getNameInDb(), "afm", afm);
+        String dbFieldForTaxId = taxIDInstance.getDbField();
+        String actualDbFieldForTaxId = dbFieldForTaxId.substring(dbFieldForTaxId.indexOf(".") + 1);
+
+        MongoCursor<Document> res = getDocumentsInCollectingByFieldValue(personEntity.getNameInDb(), actualDbFieldForTaxId, afm);
 
         int docNum = 1;
         while (res.hasNext()) {
@@ -219,7 +222,7 @@ public class MongoService extends DbService {
                 int docNum2 = e.getDocuments().size();
 
                 System.out.println("Budakovaaaa: " + e.getDocuments().size());
-                System.out.println("Budakovaaaa: " + docNum2);
+                System.out.println("A ka resultat: " + docNum2 + " : " + rs.hasNext());
 
                 while (rs.hasNext()) {
 
@@ -252,6 +255,7 @@ public class MongoService extends DbService {
                 if (instance != null) {
                     instance.setValue(value.toString());
                 }
+                System.out.println("E shtova njo: " + parent + "." + columnName + " me vleren: " + value);
             }
 
         }
@@ -275,6 +279,8 @@ public class MongoService extends DbService {
 
     public MongoCursor<Document> getDocumentsInCollectingByFieldValue(String collectionName, String fieldName,
             String fieldValue) {
+
+                System.out.println("po mundohemi: " + collectionName + " " + fieldName + " " + fieldValue);
         MongoCollection<Document> collection = database.getCollection(collectionName);
         Bson filter = Filters.eq(fieldName, fieldValue);
         MongoCursor<Document> cursorString = collection.find(filter).iterator();

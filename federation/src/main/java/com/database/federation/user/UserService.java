@@ -23,6 +23,11 @@ public class UserService {
     return repository.save(user);
   }
 
+  public UserModel findUserByNameAndSurname(String name, String surname) {
+    return repository.findByNameAndSurname(name, surname);
+  }
+
+
   public UserModel findUserById(String id) {
     return repository.findById(id).orElse(null);
   }

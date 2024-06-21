@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.database.federation.configurations.Protected;
 import com.database.federation.user.UserModel;
 import com.database.federation.utils.CategoryJson;
+import com.database.federation.utils.ClassWithProperties;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -58,6 +59,7 @@ public class OntologyController {
 
       return new ResponseEntity<>("Category created successfully", HttpStatus.CREATED);
     } catch (Exception e) {
+      e.printStackTrace();
       return new ResponseEntity<>("Failed to create category: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -74,6 +76,20 @@ public class OntologyController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR );
     }
   }
+
+  @GetMapping("/classesAndProperties")
+    public ResponseEntity<List<ClassWithProperties>> getAllClassesAndProperties() {
+        try{
+            List<ClassWithProperties> result = ontologyService.getSchemaClassesAndProperties();
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
   
 
 }

@@ -27,11 +27,11 @@ public class DatabaseService {
   }
 
   public void deleteDatabaseById(String id) {
-    Optional<DatabaseModel> userOptional = repository.findById(id);
-    if (userOptional.isPresent()) {
+    Optional<DatabaseModel> databaseOptional = repository.findById(id);
+    if (databaseOptional.isPresent()) {
       repository.deleteById(id);
     } else {
-      throw new RuntimeException("User not found with id: " + id);
+      throw new RuntimeException("Database not found with id: " + id);
     }
   }
   // Other methods as needed

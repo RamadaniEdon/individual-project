@@ -3,6 +3,7 @@ package com.database.federation.user;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,6 @@ import com.database.federation.configurations.Protected;
 import com.database.federation.utils.JwtObject;
 import com.database.federation.utils.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,20 +34,27 @@ public class UserController {
     this.passwordService = passwordService;
   }
 
-    @PostMapping("/generateToken")
-    public String generateToken() throws JsonProcessingException {
-        JwtObject exampleObject = new JwtObject("12345678");
+  @PostMapping("/generateToken")
+  public String generateToken(@RequestBody UserModel user) {
+    try {
+      UserModel userFromDb = userService.findUserByNameAndSurname(user.getName(), user.getSurname());
+      if(passwordService.matchesPassword(user.getPassword(), userFromDb.getPassword())){
+        JwtObject exampleObject = new JwtObject(userFromDb.getAfm());
         long expirationTimeMillis = 36000000; // 1 hour
         return jwtUtils.generateToken(exampleObject, expirationTimeMillis);
+      }
+      throw new RuntimeException("Invalid credentials");
+    } catch (Exception e) {
+      throw new RuntimeException("Invalid credentials");
+      // TODO: handle exception
     }
-    
-    @GetMapping("/parseToken")
-    public JwtObject parseToken(@RequestParam String token) throws JsonProcessingException {
-        return jwtUtils.parseToken(token, JwtObject.class);
-    }
+  }
 
+  @GetMapping("/parseToken")
+  public JwtObject parseToken(@RequestParam String token) throws JsonProcessingException {
+    return jwtUtils.parseToken(token, JwtObject.class);
+  }
 
-  
   @PostMapping("/users")
   public ResponseEntity<String> addDocument(@RequestBody UserModel user) {
     try {
@@ -61,7 +68,7 @@ public class UserController {
 
   @Protected
   @GetMapping("/users/{id}")
-  public ResponseEntity<UserModel> getUserById(@PathVariable String id)  {
+  public ResponseEntity<UserModel> getUserById(@PathVariable String id) {
     try {
       UserModel user = userService.findUserById(id);
       if (user != null) {
@@ -96,7 +103,7 @@ public class UserController {
 
   @GetMapping("/users/{id}/data")
   public ResponseEntity<String> getMethodName(@PathVariable String id) {
-    
+
     return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
   }
 

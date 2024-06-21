@@ -27,6 +27,17 @@
     
 
 
+    <!-- http://localhost:8081/ontologies/categories#accessControl -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8081/ontologies/categories#accessControl">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
+        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://localhost:8081/ontologies/categories#creatorOfCategory -->
 
 
@@ -34,13 +45,6 @@
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
         <rdfs:range rdf:resource="https://schema.org/Person"/>
-    </owl:ObjectProperty>
-
-
-    <owl:ObjectProperty rdf:about="http://localhost:8081/ontologies/categories#accessControl">
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
-        <rdfs:domain rdf:resource="http://localhost:8081/ontologies/categories#UserDataReference"/>
-        <rdfs:range rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
     </owl:ObjectProperty>
     
 
@@ -156,54 +160,56 @@
     
 
 
-    <!-- http://localhost:8081/ontologies/categories#12345678 -->
+    <!-- http://localhost:8081/ontologies/categories#123456789 -->
 
 
-    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678">
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789">
         <rdf:type rdf:resource="https://schema.org/Person"/>
-        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#12345678.GJYSPRIVATE"/>
-        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#12345678.private"/>
-        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#12345678.public"/>
-        <schema:identifier>12345678</schema:identifier>
+        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#123456789.not-so-private"/>
+        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#123456789.private"/>
+        <creatorOfCategory rdf:resource="http://localhost:8081/ontologies/categories#123456789.very-private"/>
+        <schema:identifier>123456789</schema:identifier>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://localhost:8081/ontologies/categories#12345678.GJYSPRIVATE -->
+    <!-- http://localhost:8081/ontologies/categories#123456789.not-so-private -->
 
 
-    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.GJYSPRIVATE">
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789.not-so-private">
         <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
-        <categoryAccessControl>nothing</categoryAccessControl>
-        <categoryName>GJYSPRIVATE</categoryName>
+        <categoryAccessControl>read-no-write</categoryAccessControl>
+        <categoryName>not-so-private</categoryName>
         <categoryPrice>5.0</categoryPrice>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://localhost:8081/ontologies/categories#12345678.private -->
+    <!-- http://localhost:8081/ontologies/categories#123456789.private -->
 
 
-    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.private">
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789.private">
         <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
-        <categoryAccessControl>no-read-no-write-nothing</categoryAccessControl>
+        <categoryAccessControl>no-read-no-write</categoryAccessControl>
         <categoryName>private</categoryName>
-        <categoryPrice>23000.0</categoryPrice>
+        <categoryPrice>50000.0</categoryPrice>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://localhost:8081/ontologies/categories#12345678.public -->
+    <!-- http://localhost:8081/ontologies/categories#123456789.very-private -->
 
 
-    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#12345678.public">
+    <owl:NamedIndividual rdf:about="http://localhost:8081/ontologies/categories#123456789.very-private">
         <rdf:type rdf:resource="http://localhost:8081/ontologies/categories#AccessControlCategory"/>
-        <categoryAccessControl>nothing</categoryAccessControl>
-        <categoryName>public</categoryName>
-        <categoryPrice>5.0</categoryPrice>
+        <categoryAccessControl>no-read-no-write</categoryAccessControl>
+        <categoryName>very-private</categoryName>
+        <categoryPrice>4000000.0</categoryPrice>
     </owl:NamedIndividual>
 </rdf:RDF>
 
 
 
 <!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

@@ -14,5 +14,33 @@ export function generateLayerColor(existingColor, hueOffset = 0, saturationOffse
 
 
 export function isDataTypeProperty(property){
-  return property.objectProperty === undefined;
+  return !property.objectProperty;
+}
+
+export function getReferenceClassProperty(database, className, property){
+  let result;
+  database.collections.forEach((collection) => {
+    if(collection.nameInDb == className){
+      collection.documents[0].forEach((field) => {
+        if(field.dbField == property){
+          result = collection.name + "." + field.field
+        }
+      })
+    }
+  })
+  return result;
+}
+
+export function sortObjectsByAttribute(objects, attribute) {
+  return objects.sort((a, b) => {
+    const valueA = a[attribute];
+    const valueB = b[attribute];
+
+    if (typeof valueA === 'number' && typeof valueB === 'number') {
+      return valueA - valueB;
+    } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      return valueA.localeCompare(valueB);
+    }
+    return 0;
+  });
 }

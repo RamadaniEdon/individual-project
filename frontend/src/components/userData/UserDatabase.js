@@ -23,7 +23,7 @@ const UserCollection = ({ data }) => {
     <Box m={3} className="Database">
       <h1>{data.companyName}</h1>
       {data.collections.map((table) => {
-        return <UserTable data={table} />
+        return <UserTable data={table} all={data} />
       })}
     </Box>
   );

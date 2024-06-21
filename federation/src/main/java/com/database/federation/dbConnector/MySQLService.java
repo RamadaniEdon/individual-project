@@ -28,19 +28,21 @@ public class MySQLService extends DbService {
     }
     
 
-    public void mapDatabaseToGlobalFormat(UserDataGlobalFormat dataFormat) throws Exception {
+    public void mapDatabaseToGlobalFormat(UserDataGlobalFormat dataFormat, String userTaxId) throws Exception {
         for (Entity e : dataFormat.getCollections()) {
             e.setUserData(false);
         }
-        String afm = "123456789";
+        String afm = userTaxId;
 
-        Entity personEntity = getPersonEntity(dataFormat);
+        Entity personEntity = getEntityHoldingTaxID(dataFormat);
         personEntity.setUserData(true);
-        Instance taxIDInstance = getTaxIDInstance(personEntity);
+        Instance taxIDInstance = getInstanceByName(personEntity, "taxID", 0);
 
+        String dbFieldForTaxId = taxIDInstance.getDbField();
+        String actualDbFieldForTaxId = dbFieldForTaxId.substring(dbFieldForTaxId.indexOf(".") + 1);
         // ResultSet res = getRowsFromTableWhere(personEntity.getNameInDb(),
         // taxIDInstance.getDbField(), afm);
-        ResultSet res = getRowsFromTableWhere(personEntity.getNameInDb(), "afm", afm);
+        ResultSet res = getRowsFromTableWhere(personEntity.getNameInDb(), actualDbFieldForTaxId, afm);
 
         int docNum = 1;
         System.out.println("Mapping database to global format");

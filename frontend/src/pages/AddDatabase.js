@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react'
 
 import Collection from '../components/addDatabase/Collection';
+import { incorporateDatabase } from '../services/api';
 
 
 
@@ -65,8 +66,8 @@ const AddDatabase = () => {
             <FormControl>
               <FormLabel>Database Type</FormLabel>
               <Select name="dbType" onChange={handleInputChange} placeholder='Select database type'>
-                <option>mysql</option>
-                <option>mongodb</option>
+                <option>sql</option>
+                <option>nosql</option>
               </Select>
             </FormControl>
             {renderedCollections}
@@ -77,9 +78,14 @@ const AddDatabase = () => {
               }
               const newFormData = { ...formData, collections: [...formData.collections, {}] };
               setFormData(newFormData);
-            }}>Click Me</Button>
+            }}>Add Collection</Button>
             <Button onClick={() => {
               console.log(JSON.stringify(formData));
+              incorporateDatabase(formData).then((res) => {
+                console.log(res);
+              }).catch((e) => {
+                console.log(e);
+              });
             }}>Submit</Button>
 
 

@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = "http://localhost:8081";
 
 // returns a Promise
 function transformToJsonOrTextPromise(response) {
@@ -36,6 +36,10 @@ async function sendRequest(url, { method = "GET", body, headers = {} }) {
           message: typeof response === "string" ? response : response.message,
         };
 
+        if (res.status === 401) {
+          window.location.href = '/';
+        }
+
         return Promise.reject(responseObject);
       });
     }
@@ -46,6 +50,13 @@ export async function testBackend() {
   return "Hello from the backend";
   // return sendRequest(BACKEND_URL + `/ontology/helloworld`, {})
   // .then((response) => response.data);
+}
+
+export async function loginReq({ name, surname, password }) {
+  return sendRequest(BACKEND_URL + `/generateToken`, {
+    method: "POST",
+    body: { name, surname, password },
+  })
 }
 
 export async function getSchemaTypes() {
@@ -76,8 +87,93 @@ export async function getSchemaTypeProperties(schemaType) {
   ]
 }
 
+export async function getUserDataFromDb(token) {
+  return sendRequest(BACKEND_URL + `/userData`, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((response) => {
+    return response
+  });
 
-export async function getUserDataFromDb(db) {
+}
+
+export async function getUserCategories(token) {
+  return sendRequest(BACKEND_URL + `/ontologies/categories/user`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function changeCategoryForData(token, collection, identifier, property, categoryName, databaseId) {
+  let propertyArray = property.split(".");
+
+  propertyArray = propertyArray.slice(1);
+
+  property = propertyArray.join(".");
+  return sendRequest(BACKEND_URL + `/userData/database/${databaseId}/accessControl`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: { collection, identifier, property, categoryName },
+  });
+}
+
+export async function createCategory(token, newCategory) {
+  console.log(newCategory)
+  return sendRequest(BACKEND_URL + `/ontologies/categories`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: newCategory,
+  });
+}
+
+export async function getClassesAndProperties() {
+  return sendRequest(BACKEND_URL + `/ontologies/classesAndProperties`, {
+  });
+}
+
+export async function getDatabases(token) {
+  return sendRequest(BACKEND_URL + `/databases`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function filterUserData(token, dbId, filters) {
+  console.log(dbId, filters)
+  // private String name;
+    // private String property;
+    // private String value;
+    // private boolean bigger;
+    // private boolean smaller;
+    // private boolean date;
+
+  return sendRequest(BACKEND_URL + `/userData/filter`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: {
+      databaseId: dbId,
+      entities: filters.map((filter) => {
+        const newFilter = {
+          name: filter.entityName,
+          property: filter.propertyName,
+          value: filter.value ? filter.value : undefined,
+          bigger: filter.comparisonType === "bigger",
+          smaller: filter.comparisonType === "smaller",
+          date: filter.isDate,
+        }
+        console.log(newFilter)
+        return newFilter
+      }),
+    },
+  });
+}
+
+export async function incorporateDatabase(formData) {
+  return sendRequest(BACKEND_URL + `/databases`, {
+    method: "POST",
+    body: formData,
+  });
+
+}
+
+export async function getUserDataFromDb1(db) {
   return [
     {
       companyName: "Credit Card Company",

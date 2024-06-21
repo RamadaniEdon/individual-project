@@ -12,9 +12,12 @@ import org.semanticweb.owlapi.model.*;
 import com.database.federation.database.DatabaseModel;
 import com.database.federation.userData.CategoryForData;
 import com.database.federation.userData.Entity;
+import com.database.federation.userData.EntityFilter;
 import com.database.federation.userData.Instance;
+import com.database.federation.userData.UserDataFilter;
 import com.database.federation.userData.UserDataGlobalFormat;
 import com.database.federation.utils.CategoryJson;
+import com.database.federation.utils.ClassWithProperties;
 import com.database.federation.utils.Collection;
 import com.database.federation.utils.DatabaseForm;
 import com.database.federation.utils.Field;
@@ -111,7 +114,7 @@ public class OntologyService {
             new ArrayList<>(Arrays.asList(rangeClass, userDataReference)));
 
         for (Field field : f.getFields()) {
-          mapFieldAgain(ont, field, rangeClass, prefix+"."+f.getName());
+          mapFieldAgain(ont, field, rangeClass, prefix + "." + f.getName());
         }
 
       } else {
@@ -160,16 +163,11 @@ public class OntologyService {
     }
   }
 
-  // NEED TO BE IMPLEMENTED
-  public static boolean isFormSetCorrectly(DatabaseForm form) {
-    // check if the database comply with the schema.org ontology standards
-    return true;
-  }
+  
 
   public void addCategory(CategoryJson categoryInfo, String userAfm) throws Exception {
     OWLDataFactory dataFactory = manager.getOWLDataFactory();
 
-    // Create an instance of the Person class
     OWLNamedIndividual existingPersonIndividual = dataFactory
         .getOWLNamedIndividual(IRI.create(CATEGORY_ONTOLOGY_PREFIX + userAfm));
     boolean personExists = categoriesOntology.getOntology()
@@ -177,10 +175,9 @@ public class OntologyService {
 
     OWLNamedIndividual personIndividual;
     if (personExists) {
-      // Use the existing Person instance
       personIndividual = existingPersonIndividual;
     } else {
-      // Create a new Person instance
+
       OWLClass personClass = dataFactory.getOWLClass(IRI.create(SCHEMA_ORG_PREFIX + "Person"));
       personIndividual = dataFactory
           .getOWLNamedIndividual(IRI.create(CATEGORY_ONTOLOGY_PREFIX + userAfm));
@@ -188,10 +185,9 @@ public class OntologyService {
           personIndividual);
       manager.addAxiom(categoriesOntology.getOntology(), personClassAssertion);
 
-      // Add an identifier property to the Person instance
-      OWLDataProperty identifierProperty = dataFactory.getOWLDataProperty(IRI.create(SCHEMA_ORG_PREFIX + "identifier"));
+      OWLDataProperty taxIDProperty = dataFactory.getOWLDataProperty(IRI.create(SCHEMA_ORG_PREFIX + "taxID"));
       OWLDataPropertyAssertionAxiom identifierPropertyAssertion = dataFactory
-          .getOWLDataPropertyAssertionAxiom(identifierProperty, personIndividual, userAfm);
+          .getOWLDataPropertyAssertionAxiom(taxIDProperty, personIndividual, userAfm);
       manager.addAxiom(categoriesOntology.getOntology(), identifierPropertyAssertion);
     }
 
@@ -205,14 +201,12 @@ public class OntologyService {
     System.out.println(accessControlCategoryExists + " pasha ty po ");
     if (!accessControlCategoryExists) {
 
-      // Create an instance of the AccessControlCategory class
       OWLClass accessControlCategoryClass = dataFactory
           .getOWLClass(IRI.create(CATEGORY_ONTOLOGY_PREFIX + "AccessControlCategory"));
       OWLClassAssertionAxiom accessControlCategoryClassAssertion = dataFactory
           .getOWLClassAssertionAxiom(accessControlCategoryClass, accessControlCategoryIndividual);
       manager.addAxiom(categoriesOntology.getOntology(), accessControlCategoryClassAssertion);
 
-      // Add properties to the AccessControlCategory instance
       addDataProperty(CATEGORY_ONTOLOGY_PREFIX + "categoryName", categoryInfo.getCategoryName(),
           accessControlCategoryIndividual);
       addDataProperty(CATEGORY_ONTOLOGY_PREFIX + "categoryPrice", "" + categoryInfo.getCategoryPrice(),
@@ -220,8 +214,6 @@ public class OntologyService {
       addDataProperty(CATEGORY_ONTOLOGY_PREFIX + "categoryAccessControl",
           categoryInfo.getCategoryAccessControl(), accessControlCategoryIndividual);
 
-      // Create an object property instance and link the AccessControlCategory
-      // instance with the Person instance
       OWLObjectProperty creatorOfCategoryProperty = dataFactory
           .getOWLObjectProperty(IRI.create(CATEGORY_ONTOLOGY_PREFIX + "creatorOfCategory"));
       OWLObjectPropertyAssertionAxiom creatorOfCategoryPropertyAssertion = dataFactory
@@ -231,7 +223,6 @@ public class OntologyService {
 
       System.out.println("Category added successfully");
     } else {
-      // Update properties of the AccessControlCategory instance
       updateDataProperty(CATEGORY_ONTOLOGY_PREFIX + "categoryName", categoryInfo.getCategoryName(),
           accessControlCategoryIndividual);
       updateDataProperty(CATEGORY_ONTOLOGY_PREFIX + "categoryPrice",
@@ -256,7 +247,6 @@ public class OntologyService {
     OWLDataFactory dataFactory = manager.getOWLDataFactory();
     OWLDataProperty dataProperty = dataFactory.getOWLDataProperty(IRI.create(propertyIri));
 
-    // Remove all existing properties with the specified IRI
     Set<OWLDataPropertyAssertionAxiom> existingProperties = categoriesOntology.getOntology()
         .getDataPropertyAssertionAxioms(individual);
     for (OWLDataPropertyAssertionAxiom axiom : existingProperties) {
@@ -266,7 +256,6 @@ public class OntologyService {
       }
     }
 
-    // Create a new axiom with the updated value
     OWLDataPropertyAssertionAxiom dataPropertyAssertion = dataFactory.getOWLDataPropertyAssertionAxiom(dataProperty,
         individual, newValue);
     manager.addAxiom(categoriesOntology.getOntology(), dataPropertyAssertion);
@@ -275,16 +264,12 @@ public class OntologyService {
   public List<CategoryJson> getCategories(String userAfm) {
     OWLDataFactory dataFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
 
-    // Get the Person individual
     String personIri = CATEGORY_ONTOLOGY_PREFIX + userAfm;
     OWLNamedIndividual personIndividual = dataFactory.getOWLNamedIndividual(IRI.create(personIri));
 
-    // Get the creatorOfCategory object property
     String propertyIri = CATEGORY_ONTOLOGY_PREFIX + "creatorOfCategory";
     OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(IRI.create(propertyIri));
 
-    // Get all categories linked to the person via the creatorOfCategory object
-    // property
     Set<OWLNamedIndividual> categories = categoriesOntology.getOntology()
         .getObjectPropertyAssertionAxioms(personIndividual)
         .stream()
@@ -297,14 +282,11 @@ public class OntologyService {
       System.out.println(category.getIRI());
     }
 
-    // Convert the categories to CategoryJson objects
     List<CategoryJson> categoryJsons = categories.stream()
         .map(category -> {
-          // Get the properties of the category
           Set<OWLDataPropertyAssertionAxiom> properties = categoriesOntology.getOntology()
               .getDataPropertyAssertionAxioms(category);
 
-          // Extract the values of the properties
           String categoryName = properties.stream()
               .filter(axiom -> axiom.getProperty().asOWLDataProperty().getIRI().toString()
                   .equals(CATEGORY_ONTOLOGY_PREFIX + "categoryName"))
@@ -330,7 +312,6 @@ public class OntologyService {
               .map(OWLLiteral::getLiteral)
               .orElse(null);
 
-          // Create a new CategoryJson object with the extracted values
           return new CategoryJson(categoryName, categoryPrice, categoryAccessControl);
         })
         .collect(Collectors.toList());
@@ -365,19 +346,33 @@ public class OntologyService {
 
     List<IRI> dataReferencesWithTheGivenId = dbOnt.getInstancesWithPropertyValueFromListWithoutPrefix(
         dataReferencesInRange, categoriesOntology.prefix + "userDataIdentifier", dataCategory.getIdentifier());
+
     System.out.println("ASDFAASDFSADF");
+    IRI dataReference = null;
+    List<IRI> rangeIndividualsOfObjectProperty = dbOnt.getIndividualsInRangeOfObjectProperty(dataCategory.getCollection() + "." + dataCategory.getProperty());
     for (IRI iri : dataReferencesWithTheGivenId) {
-      System.out.println(iri + " :: Edon Ramadani");
+      boolean found = false;
+      System.out.println("IRI e pare: " + iri.toString());
+      for(IRI otherIri : rangeIndividualsOfObjectProperty){
+        System.out.println("IRI e dyte: " + otherIri.toString());
+        if(iri.toString().equals(otherIri.toString())){
+          dataReference = iri;
+          found = true;
+          break;
+        }
+      }
+      if(found){
+        break;
+      }
     }
 
-    if (dataReferencesWithTheGivenId.size() == 0) {
+    if (dataReference == null) {
       System.out.println("Data reference with the given identifier does not exist");
       // return;
     }
 
-    IRI dataReference;
 
-    if (dataReferencesWithTheGivenId.size() == 0) {
+    if (dataReference == null) {
       dataReference = dbOnt.createInstanceOfClassWithoutPrefix(
           this.categoriesOntology.prefix + "UserDataReference");
 
@@ -396,7 +391,6 @@ public class OntologyService {
       IRI domainDataProperty = dbOnt.createObjectPropertyAndLink(
           dataCategory.getCollection() + "." + dataCategory.getProperty(), newDomainClass, dataReference);
     } else {
-      dataReference = dataReferencesWithTheGivenId.get(0);
       dbOnt.removeAxiomsWithIndividualInDomainWithoutPrefix(dataReference, categoriesOntology.prefix + "accessControl");
     }
 
@@ -404,7 +398,8 @@ public class OntologyService {
         "AccessControlCategory",
         "categoryName",
         dataCategory.getCategoryName());
-
+    System.out.println(accessControlCategory + " :: Edon Ramadani");
+    System.out.println(dataReference + " :: Edon Ramadani");
     IRI dataAccessProperty = dbOnt.createObjectPropertyAndLinkWithoutPrefix(
         categoriesOntology.prefix + "accessControl",
         dataReference,
@@ -485,5 +480,35 @@ public class OntologyService {
       }
     }
     return null;
+  }
+
+  public boolean checkFilters(UserDataFilter filter, Ontology ontology) {
+    // TODO Auto-generated method stub
+    for (EntityFilter filterEntity : filter.getEntities()) {
+      IRI classIri = IRI.create(schemaOrgOntology.prefix + filterEntity.getName());
+      IRI propertyIri = IRI.create(schemaOrgOntology.prefix + filterEntity.getProperty());
+
+      boolean filterChecked = false;
+
+      List<IRI> subClasses = ontology.getSubclasses(classIri);
+      List<IRI> subProperties = ontology.getSubproperties(propertyIri);
+
+      for(IRI subClass : subClasses){
+        System.out.println(subClass + " :: Subclass");
+        for(IRI subProperty : subProperties){
+          System.out.println(subProperty + " :: Subproperty");
+          if(ontology.isClassInPropertyDomain(subClass, subProperty)){
+            filterChecked = true;
+          }
+        }
+      }
+      if(!filterChecked) return false;
+
+    }
+    return true;
+  }
+
+  public List<ClassWithProperties> getSchemaClassesAndProperties() throws Exception{
+    return schemaOrgOntology.getAllClassesAndProperties();
   }
 }

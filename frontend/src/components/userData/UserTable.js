@@ -1,20 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
-import { Card, CardBody, CardHeader, Heading, Flex, Text, Button } from "@chakra-ui/react";
+import React from "react";
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Input,
-  Select,
   Box,
 } from '@chakra-ui/react'
 
-import { isDataTypeProperty } from "../../utils/helpers";
+import { isDataTypeProperty, getReferenceClassProperty } from "../../utils/helpers";
+import UserCell from "./UserCell";
 
 //possibly check better if data holds any documents or not
-const UserTable = ({ data }) => {
+const UserTable = ({ data, all }) => {
 
   const privateOption = data.userData;
 
@@ -35,16 +28,14 @@ const UserTable = ({ data }) => {
     </div>
   }
 
-  const printValuesOfObjectProperty = (objProp) => {
+  const printValuesOfObjectProperty = (objProp, rowId) => {
     return objProp.fields.map((property) => {
       if (isDataTypeProperty(property)) {
-        return <div className="column dataValue">
-          <p>{property.value}</p>
-          {privateOption && <button>Make Private</button>}
-        </div>
+        return <UserCell data={property} userData={privateOption} rowId={rowId} database={all} collection={data}/>
+       
       }
       else {
-        return printValuesOfObjectProperty(objProp)
+        return printValuesOfObjectProperty(objProp, rowId)
       }
     })
   }
@@ -57,7 +48,13 @@ const UserTable = ({ data }) => {
       <div className="tabletable">
         {data.documents[0] && data.documents[0].map((property) => {
           let columnTitle;
-          if (isDataTypeProperty(property)) {
+          if (property.reference) {
+            const propertyName = getReferenceClassProperty(all, property.referenceClass, property.referenceProperty)
+            return <div className="column">
+              <p>{propertyName}</p>
+            </div>
+          }
+          else if (isDataTypeProperty(property)) {
             return <div className="column">
               <p>{property.field}</p>
             </div>
@@ -72,16 +69,20 @@ const UserTable = ({ data }) => {
       </div>
       <div className="column data">
         {data.documents && data.documents.map((row) => {
+          let rowId;
+          row.forEach((property) => {
+            if (property.field == "identifier") {
+              rowId = property.value
+            }
+          })
           return <div className="row">
-            {row.map((property) => {
+            {row?.map((property) => {
               if (isDataTypeProperty(property)) {
-                return <div className="column dataValue">
-                  <p>{property.value}</p>
-                  {privateOption && <button>Make Private</button>}
-                </div>
+                return <UserCell data={property} userData={privateOption} rowId={rowId} database={all} collection={data}/>
+                
               }
               else {
-                return printValuesOfObjectProperty(property)
+                return printValuesOfObjectProperty(property, rowId)
               }
             })}
           </div>
