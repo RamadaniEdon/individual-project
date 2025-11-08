@@ -1,0 +1,6 @@
+sparql to query ontology
+
+I. Add sql databases to datagrip
+II.Add mongo databases to datagrip
+1. Retrieve user data from sql
+2. Retrieve user data from mongo
